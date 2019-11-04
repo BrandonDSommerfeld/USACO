@@ -30,32 +30,81 @@ class holstein {
         }
         nutrients.add(temp);
     }
+		
+		ArrayList<ArrayList<Integer>> possible = generate(feeds);
+		ArrayList<Integer> bestfeeds = findbest(requirements, nutrients, possible);
+		out.print(bestfeeds.size());
+		for (int i = 0; i < bestfeeds.size(); i++)
+		{
+			out.print(" " + (bestfeeds.get(i) + 1));
+		}
+		out.println();
     
     out.close();
    }
+	 
+	 public static ArrayList<Integer> findbest (ArrayList<Integer> requirements,
+	 ArrayList<ArrayList<Integer>> nutrients, ArrayList<ArrayList<Integer>> possible)
+	 {
+	 		ArrayList<ArrayList<Integer>> possibly = new ArrayList<>();
+			for (int i = 0; i < possible.size(); i++)
+			{
+				if (check(requirements, nutrients, possible.get(i)))
+					possibly.add(possible.get(i));
+			}
+	 	
+	 	 ArrayList<Integer> best = possibly.get(0);
+		 for (int i = 1; i < possibly.size(); i++)
+		 {
+		 		ArrayList<Integer> temp = possibly.get(i);
+				if (temp.size() < best.size())
+				{
+					best = temp;
+				}
+				else if (temp.size() == best.size())
+				{
+					boolean found = false, not = false;
+					for(int j = 0; !found && !not && j < temp.size(); j++)
+					{
+						if (temp.get(j) < best.get(j))
+						{
+							best = temp;
+							found = true;
+						}
+						else if (best.get(j) < temp.get(j))
+						{
+							not = true;
+						}
+					}
+				}
+		 }
+		 return best;
+	 }
    
    public static ArrayList<ArrayList<Integer>> generate 
-   (ArrayList<Integer> requirements, ArrayList<ArrayList<Integer>> nutrients, int limit)
+   (int size)
    {
        ArrayList<ArrayList<Integer>> feeds = new ArrayList<>();
-       if (limit == 1)
-       {
-           ArrayList<Integer> temp = new ArrayList<>();
-           temp.add(0);
-           feeds.add(temp);
-        }
-       else
-       {
-           ArrayList<ArrayList<Integer>> previous = generate(requirements, nutrients, limit - 1);
-           if (check(requirements, nutrients, previous.get(0)))
-           {
-               feeds.add(previous.get(0));
-               return feeds;
-           }
-           
-        }
-       
-       
+       if (size == 1)
+			 {
+			 	ArrayList<Integer> temp = new ArrayList<>();
+				temp.add(0);
+			 	feeds.add(temp);
+			 }
+			 else
+			 {
+			 		ArrayList<ArrayList<Integer>> previous = generate(size - 1);
+					for (int i = 0; i < previous.size(); i++)
+					{
+						ArrayList<Integer> temp = previous.get(i);
+						feeds.add(((ArrayList<Integer>) temp.clone()));
+						temp.add(size - 1);
+						feeds.add(temp);
+					}
+					ArrayList<Integer> wat = new ArrayList<>();
+					wat.add(size - 1);
+					feeds.add(wat);
+			 }
        
        
        return feeds;
@@ -70,7 +119,8 @@ class holstein {
            int gotten = 0;
            for (int j = 0; j < feeds.size(); j++)
            {
-               gotten += nutrients.get(feeds.get(j)).get(i);
+							
+               gotten += (nutrients.get(feeds.get(j))).get(i);
             }
            if (gotten < required)
                 return false;
