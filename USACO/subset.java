@@ -1,15 +1,15 @@
 /*
 ID: bdsomme1
 LANG: JAVA
-TASK: sort3
+TASK: subset
 */
 import java.io.*;
 import java.util.*;
 
-class sort3 {
+class subset {
   public static void main (String [] args) throws IOException {
-    BufferedReader f = new BufferedReader(new FileReader("sort3.in"));
-    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("sort3.out")));
+    BufferedReader f = new BufferedReader(new FileReader("subset.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("subset.out")));
     int size = Integer.parseInt(f.readLine());
     int total = (size * (size + 1)) / 2;
     if (total % 2 == 1)
@@ -18,24 +18,40 @@ class sort3 {
     }
     else
     {
-        out.println(calculate(size));
+        out.println(calculate(size, (size * (size + 1)) / 4));
     }
     
     out.close();
 }
 
-public static int calculate (int size)
+public static int calculate (int size, int sum)
 {
-    int sum = (size * (size + 1)) / 4;
+    int get = sum - size;
+    if (get == 0)
+    {
+        return 1;
+    }
+    else if (get == 1)
+    {
+        return 1;
+    }
+    else if (get == 2)
+    {
+        return 1;
+    }
+    
     int min = 1;
-    while ((min * (min + 1)) / 2 < sum)
+    while ((min * (min + 1)) / 2 < get)
     {
         min++;
     }
     int count = 0;
-    for (int i = size; i >= min; i--)
+    for (int i = size - 1; i >= min; i--)
     {
-        //recursion time
+        if (i <= get)
+        {
+            count += calculate(i, get);
+        }
     }
     
     return count;
