@@ -84,49 +84,52 @@ for (int i = 0; i < start.length() && !found; i++)
 }
 
 int line = size;
-start = f.readLine();
+String temps = start;
+String temp2 = f.readLine();
+start += temp2;
+
 int lines = 1;
-while (start != null && !found)
+while (temp2 != null && !found)
 {
-    for (int i = 0; i < start.length() && !found; i++)
+    for (int i = line; i < start.length() && !found; i++)
 {
-    if (possible.get(i + line * lines) && prefixes.contains(start.substring(i, i + 1)))
+    if (possible.get(i + size - line) && prefixes.contains(start.substring(i, i + 1)))
     {
                     possible.add(true);
     }
-    else if (i>0 && possible.get(i - 1 + line * lines) && prefixes.contains(start.substring(i - 1, i + 1)))
+    else if (possible.get(i - 1 + size - line) && prefixes.contains(start.substring(i - 1, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 1 && possible.get(i - 2 + line * lines) && prefixes.contains(start.substring(i - 2, i + 1)))
+    else if (possible.get(i - 2 + size - line) && prefixes.contains(start.substring(i - 2, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 2 && possible.get(i - 3 + line * lines) && prefixes.contains(start.substring(i - 3, i + 1)))
+    else if (possible.get(i - 3 + size - line) && prefixes.contains(start.substring(i - 3, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 3 && possible.get(i - 4 + line * lines) && prefixes.contains(start.substring(i - 4, i + 1)))
+    else if (possible.get(i - 4 + size - line) && prefixes.contains(start.substring(i - 4, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 4 && possible.get(i - 5 + line * lines) && prefixes.contains(start.substring(i - 5, i + 1)))
+    else if (possible.get(i - 5 + size - line) && prefixes.contains(start.substring(i - 5, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 5 && possible.get(i - 6 + line * lines) && prefixes.contains(start.substring(i - 6, i + 1)))
+    else if (possible.get(i - 6 + size - line) && prefixes.contains(start.substring(i - 6, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 6 && possible.get(i - 7 + line * lines) && prefixes.contains(start.substring(i - 7, i + 1)))
+    else if (possible.get(i - 7 + size - line) && prefixes.contains(start.substring(i - 7, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 7 && possible.get(i - 8 + line * lines) && prefixes.contains(start.substring(i -8, i + 1)))
+    else if (possible.get(i - 8 + size - line) && prefixes.contains(start.substring(i -8, i + 1)))
     {
         possible.add(true);
     }
-    else if (i > 8 && possible.get(i - 9 + line * lines) && prefixes.contains(start.substring(i - 9, i + 1)))
+    else if (possible.get(i - 9 + size - line) && prefixes.contains(start.substring(i - 9, i + 1)))
     {
         possible.add(true);
     }
@@ -137,12 +140,16 @@ while (start != null && !found)
         if (check(possible))
         {
             found = true;
-            max = i - 9 + lines * line;
+            max = i - 9 + size - line;
         }
 }
     
-    size += start.length();
-    start = f.readLine();
+		line = temp2.length();
+		size += line;
+		start = temp2;
+		temp2 = f.readLine();
+		
+		start += temp2;
     lines++;
 }
 if (!found)
@@ -156,6 +163,10 @@ if (!found)
         }
     }
 }
+for (int i = possible.size() - 1; i >= possible.size() - 10; i--)
+    {
+        System.out.println(possible.get(i));
+    }
 out.println(max);
         
 out.close();
