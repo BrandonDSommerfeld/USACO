@@ -34,7 +34,7 @@ for (int i = 0; i < start.length() && !found; i++)
 {
     if (possible.get(i) && prefixes.contains(start.substring(i, i + 1)))
     {
-					possible.add(true);
+                    possible.add(true);
     }
     else if (i > 0 && possible.get(i - 1) && prefixes.contains(start.substring(i - 1, i + 1)))
     {
@@ -72,15 +72,15 @@ for (int i = 0; i < start.length() && !found; i++)
     {
         possible.add(true);
     }
-		else
-		{
-			possible.add(false);
-		}
- 		if (check(possible))
-		{
-			found = true;
-			max = i - 9;
-		}
+    else
+    {
+        possible.add(false);
+    }
+    if (check(possible))
+    {
+        found = true;
+        max = i - 9;
+    }
 }
 
 int line = size;
@@ -88,11 +88,11 @@ start = f.readLine();
 int lines = 1;
 while (start != null && !found)
 {
-	for (int i = 0; i < start.length() && !found; i++)
+    for (int i = 0; i < start.length() && !found; i++)
 {
     if (possible.get(i + line * lines) && prefixes.contains(start.substring(i, i + 1)))
     {
-					possible.add(true);
+                    possible.add(true);
     }
     else if (i>0 && possible.get(i - 1 + line * lines) && prefixes.contains(start.substring(i - 1, i + 1)))
     {
@@ -130,31 +130,31 @@ while (start != null && !found)
     {
         possible.add(true);
     }
-		else
-		{
-			possible.add(false);
-		}
- 		if (check(possible))
-		{
-			found = true;
-			max = i - 9;
-		}
+        else
+        {
+            possible.add(false);
+        }
+        if (check(possible))
+        {
+            found = true;
+            max = i - 9 + lines * line;
+        }
 }
-	
-	size += start.length();
-	start = f.readLine();
-	lines++;
+    
+    size += start.length();
+    start = f.readLine();
+    lines++;
 }
 if (!found)
 {
-	for (int i = possible.size() - 1; i >= 0 && !found; i--)
-	{
-		if (possible.get(i))
-		{
-			max = i;
-			found = true;
-		}
-	}
+    for (int i = possible.size() - 1; i >= 0 && !found; i--)
+    {
+        if (possible.get(i))
+        {
+            max = i;
+            found = true;
+        }
+    }
 }
 out.println(max);
         
@@ -165,13 +165,13 @@ out.close();
  
  public static boolean check (ArrayList<Boolean> possible)
  {
- 	for (int i = possible.size() - 1; i >= possible.size() - 10; i--)
-	{
-		if (possible.get(i))
-		{
-			return false;
-		}
-	}
-	return true;
+    for (int i = possible.size() - 1; i >= possible.size() - 10; i--)
+    {
+        if (possible.get(i))
+        {
+            return false;
+        }
+    }
+    return true;
  }
 }

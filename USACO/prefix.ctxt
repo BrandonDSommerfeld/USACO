@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=prefix
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment2.params=possible
+comment2.target=boolean\ check(java.util.ArrayList)
+numComments=3
