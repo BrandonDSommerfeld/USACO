@@ -1,0 +1,177 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: prefix
+*/
+import java.io.*;
+import java.util.*;
+
+class prefix {
+  public static void main (String [] args) throws IOException {
+BufferedReader f = new BufferedReader(new FileReader("prefix.in"));
+PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("prefix.out")));
+    
+        
+HashSet<String> prefixes = new HashSet<>();
+String temp = "";
+while (!temp.equals("."))
+{
+    StringTokenizer reader = new StringTokenizer(f.readLine());
+    while (reader.hasMoreTokens())
+    {
+        temp = reader.nextToken();
+        prefixes.add(temp);
+    }
+}
+        
+ArrayList<Boolean> possible = new ArrayList<>();
+possible.add(true);
+String start = f.readLine();
+int size = start.length();
+boolean found= false;
+int max = 0;
+for (int i = 0; i < start.length() && !found; i++)
+{
+    if (possible.get(i) && prefixes.contains(start.substring(i, i + 1)))
+    {
+					possible.add(true);
+    }
+    else if (i > 0 && possible.get(i - 1) && prefixes.contains(start.substring(i - 1, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 1 && possible.get(i - 2) && prefixes.contains(start.substring(i - 2, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 2 && possible.get(i - 3) && prefixes.contains(start.substring(i - 3, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 3 && possible.get(i - 4) && prefixes.contains(start.substring(i - 4, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 4 && possible.get(i - 5) && prefixes.contains(start.substring(i - 5, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 5 && possible.get(i - 6) && prefixes.contains(start.substring(i - 6, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 6 && possible.get(i - 7) && prefixes.contains(start.substring(i - 7, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 7 && possible.get(i - 8) && prefixes.contains(start.substring(i -8, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 8 && possible.get(i - 9) && prefixes.contains(start.substring(i - 9, i + 1)))
+    {
+        possible.add(true);
+    }
+		else
+		{
+			possible.add(false);
+		}
+ 		if (check(possible))
+		{
+			found = true;
+			max = i - 9;
+		}
+}
+
+int line = size;
+start = f.readLine();
+int lines = 1;
+while (start != null && !found)
+{
+	for (int i = 0; i < start.length() && !found; i++)
+{
+    if (possible.get(i + line * lines) && prefixes.contains(start.substring(i, i + 1)))
+    {
+					possible.add(true);
+    }
+    else if (i>0 && possible.get(i - 1 + line * lines) && prefixes.contains(start.substring(i - 1, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 1 && possible.get(i - 2 + line * lines) && prefixes.contains(start.substring(i - 2, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 2 && possible.get(i - 3 + line * lines) && prefixes.contains(start.substring(i - 3, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 3 && possible.get(i - 4 + line * lines) && prefixes.contains(start.substring(i - 4, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 4 && possible.get(i - 5 + line * lines) && prefixes.contains(start.substring(i - 5, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 5 && possible.get(i - 6 + line * lines) && prefixes.contains(start.substring(i - 6, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 6 && possible.get(i - 7 + line * lines) && prefixes.contains(start.substring(i - 7, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 7 && possible.get(i - 8 + line * lines) && prefixes.contains(start.substring(i -8, i + 1)))
+    {
+        possible.add(true);
+    }
+    else if (i > 8 && possible.get(i - 9 + line * lines) && prefixes.contains(start.substring(i - 9, i + 1)))
+    {
+        possible.add(true);
+    }
+		else
+		{
+			possible.add(false);
+		}
+ 		if (check(possible))
+		{
+			found = true;
+			max = i - 9;
+		}
+}
+	
+	size += start.length();
+	start = f.readLine();
+	lines++;
+}
+if (!found)
+{
+	for (int i = possible.size() - 1; i >= 0 && !found; i--)
+	{
+		if (possible.get(i))
+		{
+			max = i;
+			found = true;
+		}
+	}
+}
+out.println(max);
+        
+out.close();
+}
+ 
+ 
+ 
+ public static boolean check (ArrayList<Boolean> possible)
+ {
+ 	for (int i = possible.size() - 1; i >= possible.size() - 10; i--)
+	{
+		if (possible.get(i))
+		{
+			return false;
+		}
+	}
+	return true;
+ }
+}
