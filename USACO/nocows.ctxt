@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=nocows
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment2.params=num\ chosen
+comment2.target=int\ combinations(int,\ int)
+numComments=3
