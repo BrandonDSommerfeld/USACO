@@ -5,6 +5,7 @@ TASK: nocows
 */
 import java.io.*;
 import java.util.*;
+import java.math.BigInteger;
 
 class nocows {
   public static void main (String [] args) throws IOException {
@@ -26,6 +27,10 @@ else if (height == 2)
     if (nodes == 3)
         ways = 1;
 }
+else if (nodes < height * 2 - 1)
+{
+
+}
 else
 {
 int[][][] numbot = new int[height + 1][nodes + 1][nodes];
@@ -39,7 +44,7 @@ for (int i = 3; i<= height; i++)
             {
                 int previous = j - k;
                 int counter = 0;
-                for (int count = 0; count < nodes; count++)
+                for (int count = 0; count < nodes; count+=2)
                 {
                     counter += numbot[i - 1][previous][count] * combinations(count, k / 2);;
                     counter %= 9901;
@@ -62,31 +67,29 @@ out.println(ways);
 out.close();
 }
 
-public static BigInteger combinations (int num, int chosen)
+public static int combinations (int num, int chosen)
 {
     if (chosen > num)
         return 0;
     if (chosen == num)
         return 1;
-        int top = 1;
-        for (int i = num; i > num - chosen; i--)
-        {
-            top *= i;
-        }
-        int bottom = 1;
-        for (int i = chosen; i > 1; i--)
-        {
-            bottom *= i;
-        }
-    try 
-    {
-        return top/bottom;
-    }
-    catch (Exception e)
-    {
-       
-    }
-    return 0;
-}
+		ArrayList<Double> indiv = new ArrayList<>();
+		for (int i = 1; i < num; i++)
+		{
+			if (i >= chosen)
+			{
+				double boi = i / (num - i);
+				indiv.add(boi);
+			}
+		}
+		indiv.add(((double) num));
+		double comb = 1;
+		for (int i = 0; i < indiv.size(); i++)
+		{
+			comb *= indiv.get(i);
+			comb %= 9901;
+		}
+		return ((int) Math.round(comb));
+}	
 
 }
