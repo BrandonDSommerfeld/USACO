@@ -18,11 +18,13 @@ int ways = 0;
 
 if(height == 1)
 {
-
+    if (nodes == 1)
+        ways = 1;
 }
 else if (height == 2)
 {
-
+    if (nodes == 3)
+        ways = 1;
 }
 else
 {
@@ -39,7 +41,7 @@ for (int i = 3; i<= height; i++)
                 int counter = 0;
                 for (int count = 0; count < nodes; count++)
                 {
-                    counter += numbot[i - 1][previous][count] * combinations(previous, k / 2);;
+                    counter += numbot[i - 1][previous][count] * combinations(count, k / 2);;
                     counter %= 9901;
                 }
                 numbot[i][j][k] = counter % 9901;
@@ -54,14 +56,20 @@ for (int i = 0; i < nodes; i++)
     ways %= 9901;
 }
 }
+
+
 out.println(ways);
 out.close();
 }
 
-public static int combinations (int num, int chosen)
+public static BigInteger combinations (int num, int chosen)
 {
+    if (chosen > num)
+        return 0;
+    if (chosen == num)
+        return 1;
         int top = 1;
-        for (int i = num; i > chosen; i--)
+        for (int i = num; i > num - chosen; i--)
         {
             top *= i;
         }
@@ -70,7 +78,15 @@ public static int combinations (int num, int chosen)
         {
             bottom *= i;
         }
+    try 
+    {
         return top/bottom;
+    }
+    catch (Exception e)
+    {
+       
+    }
+    return 0;
 }
 
 }
