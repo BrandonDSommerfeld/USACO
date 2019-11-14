@@ -38,16 +38,20 @@ numbot[1][1][1] = 1;
 numbot[2][3][2] = 1;
 for (int i = 3; i<= height; i++)
 {
-    for (int k = 2; k < nodes; k += 2)
+    for (int k = 2; k <= nodes - 2*i + 3; k += 2)
     {
-            for (int j = 2 * i - 3 + k; j <= nodes; j += 2)
+            for (int j = 2 * i - 3 + k; j <= nodes - (height - i)*2; j += 2)
             {
                 int previous = j - k;
                 int counter = 0;
-                for (int count = 0; count < nodes; count+=2)
+                for (int count = 2; count < nodes; count+=2)
                 {
-                    counter += numbot[i - 1][previous][count] * combinations(count, k / 2);;
+                    int current = numbot[i - 1][previous][count];
+                    if (current != 0)
+                    {
+                    counter += current * combinations(count, k / 2);;
                     counter %= 9901;
+                }
                 }
                 numbot[i][j][k] = counter % 9901;
             }
@@ -58,8 +62,8 @@ ways = 0;
 for (int i = 0; i < nodes; i++)
 {
     ways += numbot[height][nodes][i];
-    ways %= 9901;
 }
+ways %= 9901;
 }
 
 
@@ -73,23 +77,20 @@ public static int combinations (int num, int chosen)
         return 0;
     if (chosen == num)
         return 1;
-		ArrayList<Double> indiv = new ArrayList<>();
-		for (int i = 1; i < num; i++)
-		{
-			if (i >= chosen)
-			{
-				double boi = i / (num - i);
-				indiv.add(boi);
-			}
-		}
-		indiv.add(((double) num));
-		double comb = 1;
-		for (int i = 0; i < indiv.size(); i++)
-		{
-			comb *= indiv.get(i);
-			comb %= 9901;
-		}
-		return ((int) Math.round(comb));
-}	
+    int comb = 1;
+    int r = 1;
+    for (int i = chosen + 1; i <= num; i++)
+    {
+        comb *= i;
+        int divide = (i - chosen);
+        while (comb % divide != 0)
+        {
+            comb += 9901;
+        }
+        comb = comb/divide;
+        comb %= 9901;
+    }
+    return comb;
+}   
 
 }
