@@ -12,7 +12,7 @@ class concom {
 BufferedReader f = new BufferedReader(new FileReader("concom.in"));
 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("concom.out")));
     
-
+int companies = Integer.parseInt(f.readLine());
 
 out.close();
 }
