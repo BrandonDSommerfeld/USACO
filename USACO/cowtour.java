@@ -43,79 +43,77 @@ for (int i = 0; i < num; i++)
 
 
 double[][] shortest = algorithm(distance);
-ArrayList<int[]> possible = new ArrayList<>();
+ArrayList<HashSet<Integer>> separates = new ArrayList<>();
 for(int i = 0; i < num; i++)
 {
-	for(int j = 0; j < i; j++)
+	if (!inside(separates, i))
 	{
-		if(shortest[i][j] == 0)
+		HashSet<Integer> temp = new HashSet<>();
+		temp.add(i);
+		for(int j = i + 1; j < num; j++)
 		{
-			int[] temp = new int[2];
-			temp[0] = i;
-			temp[1] = j;
-			possible.add(temp);
+			if (!equals(shortest[i][j], 0))
+			{
+				temp.add(j);
+			}
 		}
+		separates.add(temp);
 	}
 }
 
+double[] diams = new double[num];
+for(HashSet<Integer> set1: separates)
+{
+for(Integer nu: set1)
+{
+	ArrayList<Double> lengs = new ArrayList<>();
+	for(Integer boi: set1)
+	{
+		if(nu != boi)
+		{
+			lengs.add(shortest[nu][boi]);
+		}
+	}
+	double max = 0;
+	for(int i = 0; i < lengs.size(); i++)
+	{
+		if(lengs.get(i) > max)
+		{
+			max = lengs.get(i);
+		}
+	}
+	diams[nu] = max;
+}
+}
 
 double lowest = Integer.MAX_VALUE;
-for(int i = 0; i < possible.size(); i++)
+for(HashSet<Integer> set1: separates)
 {
-	double[][] tempd = shortest.clone();
-	int[] extract = possible.get(i);
-	int first = extract[0];
-	int second = extract[1];
-	double d = Math.hypot(pastures[first][0] - pastures[second][0]
-				, pastures[first][1] - pastures[second][1]);
-	tempd[first][second] = d;
-	tempd[second][first] = d;
-	for(int c = 0; c < num; c++)
+for(HashSet<Integer> set2: separates)
+{
+for(Integer green: set1)
+{
+	for(Integer ladybug: set2)
 	{
-		for(int boi = 0; boi < num; boi++)
+		double d = diams[green] + diams[ladybug] + Math.hypot(pastures[green][0] - pastures[ladybug][0], pastures[green][1] - pastures[ladybug][1]);
+		if (d < lowest)
 		{
-			if(tempd[c][boi] == 0 && shortest[c][first] != 0 && shortest[second][boi] != 0 && c != boi)
-			{
-				tempd[c][boi] = shortest[c][first] + shortest[second][boi] + d;
-			}
-			else if(tempd[c][boi] == 0 && shortest[first][c] != 0 && shortest[boi][second] != 0 && c != boi)
-			{
-				tempd[c][boi] = shortest[first][c] + shortest[boi][second] + d;
-			}
-			else if(tempd[c][boi] == 0 && shortest[first][c] != 0 && shortest[second][boi] != 0 && c != boi)
-			{
-				tempd[c][boi] = shortest[first][c] + shortest[second][boi] + d;
-			}
-			else if(tempd[c][boi] == 0 && shortest[c][first] != 0 && shortest[boi][second] != 0 && c != boi)
-			{
-				tempd[c][boi] = shortest[c][first] + shortest[boi][second] + d;
-			}
+			lowest = d;
 		}
-	}
-	double diameter = findmax(tempd);
-	if (diameter < lowest)
-	{
-		System.out.println();
-		System.out.println(first + " " + second);
-		System.out.println();
-		lowest = diameter;
-		
-		for(int succ = 0; succ < num; succ++)
-		{
-			for(int succc = 0; succc < num; succc++)
-			{
-				System.out.print(tempd[succ][succc] + " ");
-			}
-			System.out.println();
-		}
-		
 	}
 }
-
+}
+}
+double possible = findmax(shortest);
+if (possible > lowest)
+{
+	lowest = possible;
+}
 DecimalFormat format = new DecimalFormat("#######################.000000");
 out.println(format.format(lowest));
 out.close();
 }
+
 
 
 public static double[][] algorithm (double[][] distance)
@@ -160,5 +158,22 @@ for (int i = 0; i < distances.length; i++)
 }
 
 return max;
+}
+
+public static boolean equals (double d1, double d2)
+{
+	return Math.abs(d1 - d2) < 0.001;
+}
+
+public static boolean inside(ArrayList<HashSet<Integer>> separates, int i)
+{
+	for(int count = 0; count < separates.size(); count++)
+	{
+		if(separates.get(count).contains(i))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 }
