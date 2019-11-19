@@ -1,0 +1,45 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: fracdec
+*/
+import java.io.*;
+import java.util.*;
+import java.text.DecimalFormat;
+
+class fracdec {
+  public static void main (String [] args) throws IOException {
+BufferedReader f = new BufferedReader(new FileReader("fracdec.in"));
+PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("fracdec.out")));
+
+StringTokenizer reader = new StringTokenizer(f.readLine());
+int num = Integer.parseInt(reader.nextToken());
+int denom = Integer.parseInt(reader.nextToken());
+int left = num/denom;
+int r = num % denom;
+DecimalFormat fmt = new DecimalFormat("00000.");
+fmt.setRoundingMode(RoundMode.FLOOR);
+String ongoing = "";
+boolean finished = false;
+while(!finished)
+{
+	int nextdigits = (r*100000) / denom;
+	r = (r*100000) % denom;
+	if(ongoing.indexOf("" + nextdigits) == -1)
+	{
+		ongoing += nextdigits;
+	}
+	else
+	{
+		for(int i = ongoing.length()-1; i > 0; i--)
+		{
+			
+		}
+	}
+}
+
+
+out.close();
+}
+
+}
