@@ -55,9 +55,11 @@ public static int recursive(ArrayList<ArrayList<Double>> data, int minutes, int 
 	ArrayList<Integer> bois = new ArrayList<>();
 	bois.add(first);
 	bois.add(second);
+	if (num >= 2)
+	{
 	for(int i = start; i < data.size(); i++)
 	{
-		if(((double) data.get(start).get(2)) - ((double) data.get(i).get(2)) < 0.001)
+		if(((double) data.get(start).get(2)) - ((double) data.get(i).get(2)) < 0.01)
 		{
 			int times = (int) Math.round(data.get(i).get(1));
 	int numb = minutes / times;
@@ -70,13 +72,9 @@ public static int recursive(ArrayList<ArrayList<Double>> data, int minutes, int 
 		}
 		}
 	}
+} 
 	int nasdf = best(bois);
 	return nasdf;
-	/*
-	if (first > second)
-		return first;
-	return second;
-	*/
 	}
 	return recursive(data, minutes, start + 1);
 }
