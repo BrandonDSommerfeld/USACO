@@ -25,14 +25,14 @@ while(first != null)
 	first = f.readLine();
 }
 HashMap<String, Integer> count = new HashMap<>();
-for(int i = 0; i < whole.length() - min; i++)
+for(int i = 0; i < whole.length() - min + 1; i++)
 {
 	for(int j = min; j <= max; j++)
 	{
 		try
 		{
 			String temp = whole.substring(i, i + j);
-			if(count.get(temp) != 0)
+			if(count.get(temp) != null)
 			{
 				count.put(temp, count.get(temp) + 1);
 			}
@@ -56,8 +56,10 @@ for(String number: count.keySet())
 	toSort.add(temp);
 }
 quickSort(toSort, 0, toSort.size() - 1);
+toSort = reverse(toSort);
 int printed = 0;
-while (printed < num)
+int counted = 0;
+while (counted < num && printed < toSort.size())
 {
 	int happens = (Integer) toSort.get(printed).get(1);
 	ArrayList<String> all = new ArrayList<>();
@@ -66,7 +68,7 @@ while (printed < num)
 	boolean stop = false;
 	for(int i = printed;!stop && i < toSort.size(); i++)
 	{
-		if (((Integer) toSort.get(i).get(1)).equals(happens) && printed < num)
+		if (((Integer) toSort.get(i).get(1)).equals(happens))
 		{
 			all.add((String) toSort.get(i).get(0));
 			printed++;
@@ -78,26 +80,44 @@ while (printed < num)
 	}
 	out.println(happens);
 	stringSort(all);
+	int linecount = 0;
 	for(int i = 0; i < all.size(); i++)
 	{
 		out.print(all.get(i));
-		if (i != all.size() - 1)
+		linecount++;
+		if(linecount % 6 == 0 && i != all.size() - 1)
+		{
+			out.println();
+		}
+		else if (i != all.size() - 1)
 		{
 			out.print(" ");
 		}
 	}
+	out.println();
+	counted++;
 }
 
 out.close();
+}
+  
+public static ArrayList<ArrayList<Object>> reverse (ArrayList<ArrayList<Object>> data)
+{
+	ArrayList<ArrayList<Object>> temp = new ArrayList<>();
+	for(int i = data.size() - 1; i >= 0; i--)
+	{
+		temp.add(data.get(i));
+	}
+	return temp;
 }
 
 public static void stringSort (ArrayList<String> list)
 {
 	for(int i = 0; i < list.size() - 1; i++)
 	{
-		String min = "111111111111111111";
+		String min = "1111111111111111";
 		int place = 0;
-		for(int j = i + 1; j < list.size(); j++)
+		for(int j = i; j < list.size(); j++)
 		{
 			if(list.get(j).length() < min.length())
 			{
@@ -106,7 +126,7 @@ public static void stringSort (ArrayList<String> list)
 			}
 			else if (list.get(j).length() == min.length())
 			{
-				if(list.get(j).compareTo(min) < 0)
+				if(Integer.parseInt(list.get(j), 2) < Integer.parseInt(min, 2))
 				{
 					min = list.get(j);
 					place = j;
@@ -143,7 +163,10 @@ public static int partition(ArrayList<ArrayList<Object>> arr, int low, int high)
                 arr.set(j, temp);
             } 
         }
-				return i + 1;
+        ArrayList<Object> temp = arr.get(i + 1);
+        arr.set(i + 1, arr.get(high));
+        arr.set(high, temp);
+		return i + 1;
 }
 
 }
