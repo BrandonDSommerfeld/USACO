@@ -5,7 +5,6 @@ TASK: contact
 */
 import java.io.*;
 import java.util.*;
-import javax.script.*;
 
 class contact {
   public static void main (String [] args) throws IOException {
@@ -25,13 +24,12 @@ while(first != null)
 	first = f.readLine();
 }
 HashMap<String, Integer> count = new HashMap<>();
-for(int i = 0; i < whole.length() - min + 1; i++)
+ArrayList<String> previous = new ArrayList<>();
+for(int i = 0; i < whole.length() - max + 1; i++)
 {
-	for(int j = min; j <= max; j++)
-	{
-		try
-		{
-			String temp = whole.substring(i, i + j);
+			try
+			{
+			String temp = whole.substring(i, i + max);
 			if(count.get(temp) != null)
 			{
 				count.put(temp, count.get(temp) + 1);
@@ -39,12 +37,45 @@ for(int i = 0; i < whole.length() - min + 1; i++)
 			else
 			{
 				count.put(temp, 1);
+				previous.add(temp);
 			}
-		}
-		catch (Exception e)
-		{
-			
-		}
+			}
+			catch (Exception e)
+			{
+			}
+}
+for(int i = max - 1; i >= min; i--)
+{
+	try
+	{
+	ArrayList<String> boyo = new ArrayList<>();
+	for(int j = 0; j < previous.size(); j++)
+	{
+		String boi = previous.get(j).substring(1);
+		if(count.get(boi) != null)
+			{
+				count.put(boi, count.get(boi) + count.get(previous.get(j)));
+			}
+			else
+			{
+				count.put(boi, count.get(previous.get(j)));
+				boyo.add(boi);
+			}
+	}
+	String edgecase = whole.substring(0, i);
+	if(count.get(edgecase) != null)
+			{
+				count.put(edgecase, count.get(edgecase) + 1);
+			}
+			else
+			{
+				count.put(edgecase, 1);
+				boyo.add(edgecase);
+			}
+	previous = boyo;
+	}
+	catch (Exception e)
+	{
 	}
 }
 ArrayList<ArrayList<Object>> toSort = new ArrayList<>();
@@ -126,7 +157,7 @@ public static void stringSort (ArrayList<String> list)
 			}
 			else if (list.get(j).length() == min.length())
 			{
-				if(Integer.parseInt(list.get(j), 2) < Integer.parseInt(min, 2))
+				if(list.get(j).compareTo(min) < 0)
 				{
 					min = list.get(j);
 					place = j;
