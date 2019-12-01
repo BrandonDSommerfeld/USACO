@@ -16,16 +16,19 @@ int min = Integer.parseInt(reader.nextToken());
 int max = Integer.parseInt(reader.nextToken());
 int num = Integer.parseInt(reader.nextToken());
 
-String first = f.readLine();
+String last = f.readLine();
+String front = last;
 String whole = "";
-while(first != null)
-{
-	whole += first;
-	first = f.readLine();
-}
+String next = f.readLine();
 HashMap<String, Integer> count = new HashMap<>();
 ArrayList<String> previous = new ArrayList<>();
-for(int i = 0; i < whole.length() - max + 1; i++)
+while(last != null)
+{
+	if(next != null)
+		whole = last + next;
+	else
+		whole = last;
+for(int i = 0; i < last.length(); i++)
 {
 			try
 			{
@@ -43,6 +46,9 @@ for(int i = 0; i < whole.length() - max + 1; i++)
 			catch (Exception e)
 			{
 			}
+}
+last = next;
+next = f.readLine();
 }
 for(int i = max - 1; i >= min; i--)
 {
@@ -62,7 +68,7 @@ for(int i = max - 1; i >= min; i--)
 				boyo.add(boi);
 			}
 	}
-	String edgecase = whole.substring(0, i);
+	String edgecase = front.substring(0, i);
 	if(count.get(edgecase) != null)
 			{
 				count.put(edgecase, count.get(edgecase) + 1);
