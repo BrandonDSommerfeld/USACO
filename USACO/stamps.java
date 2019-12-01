@@ -30,13 +30,38 @@ while(line != null)
 	line = f.readLine();
 }
 int maxValue = total*max;
-boolean[][] possible = new boolean[maxValue + 1][total + 1];
-possible[0][0] = true;
+int[] ways = new int[maxValue + 1];
 for(Integer num: values)
 {
-	possible[num][1] = true;
+	ways[num] = 1;
+}
+for(int i = 1; i <= maxValue; i++)
+{
+	int tempy = ways[i];
+	if (tempy != total)
+	{
+		if(tempy != 0)
+		{
+			for(Integer num: values)
+			{
+				if(ways[i + num] == 0 || ways[i + num] > tempy + 1)
+				{
+					ways[i + num] = tempy + 1;
+				}
+			}
+		}
+		else
+		{
+			out.println(i - 1);
+			break;
+		}
+	}
+	if(i == maxValue)
+	{
+		out.println(maxValue);
+	}
 }
 out.close();
   }
 }
-    
+   
