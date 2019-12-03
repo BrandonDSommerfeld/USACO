@@ -11,7 +11,7 @@ class spin{
 BufferedReader f = new BufferedReader(new FileReader("spin.in"));
 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("spin.out")));
 int[] speeds = new int[5];
-ArrayList<ArrayList<Integer>>[] wedges = new ArrayList<>()[5];
+ArrayList<ArrayList<Integer>>[] wedges = new ArrayList[5];
 
 for(int i = 0; i < 5; i++)
 {
@@ -64,7 +64,7 @@ public static void advance(ArrayList<ArrayList<Integer>>[] wedges, int[] speeds)
 		ArrayList<ArrayList<Integer>> wedge = wedges[i];
 		for(int j = 0; j < wedge.size(); j++)
 		{
-			wedge.get(j).set(0, wedge.get(j).get(0) + speed[i]);
+			wedge.get(j).set(0, wedge.get(j).get(0) + speeds[i]);
 		}
 	}
 }
@@ -92,6 +92,11 @@ public static boolean overlap(ArrayList<ArrayList<Integer>>[] wedges)
 			}
 		}
 	}
+	
+	
+	
+	
+	return (gaps.size() != 0);
 }
 
 
