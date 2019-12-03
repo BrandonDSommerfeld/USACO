@@ -13,123 +13,52 @@ PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("kimbits.out
 StringTokenizer reader = new StringTokenizer(f.readLine());
 int length = Integer.parseInt(reader.nextToken());
 int number = Integer.parseInt(reader.nextToken());
-int index = Integer.parseInt(reader.nextToken());
+long index = Long.parseLong(reader.nextToken());
 
-String start = "";
-for(int i = 0; i < length - number; i++)
+long place = 1;
+long count = 0;
+int onesLeft = number;
+String building = "";
+while (count != index && place <= length)
 {
-	start += "0";
+	int tempy = 0;
+	for(int i = 0; i <= onesLeft; i++)
+	{
+		tempy += combinations(length - place, i);
+	}
+	if(count + tempy < index)
+	{
+		building += "1";
+		count += tempy;
+		place++;
+		onesLeft--;
+	}
+	else
+	{
+		building += "0";
+		place++;
+	}
 }
-for(int i = 0; i < number; i++)
-{
-	start += "1";
-}
-
+out.println(building);
 out.close();
 }
 
-public static int rightmost0 (String binary)
+public static long combinations(long c, long r)
 {
-	int start = 0;
-	for(int i = binary.length() - 1; i >= 0; i--)
+	if(r == 0)
 	{
-		if(binary.charAt(i) == '1')
-		{
-			start = i;
-			break;
-		}
-	}
-	for(int i = start - 1; i >= 0; i--)
+		return 1;
+	}	
+	long ongoing = 1;
+	for(int i = 1; i < r; i++)
 	{
-		if(binary.charAt(i) == '0')
-		{
-			return i;
-		}
+		ongoing *= (c - i);
+		ongoing /= i;
 	}
-}
-
-public static int leftmost1 (String binary)
-{
-	int start = 0;
-	for(int i = 0; i < binary.length(); i++)
-	{
-		if(binary.charAt(i) == '0')
-		{
-			start = i;
-			break;
-		}
-	}
-	for(int i = start + 1; i < binary.length(); i++)
-	{
-		if(binary.charAt(i) == '1')
-		{
-			return i;
-		}
-	}
-}
-
-
-public static String swap (String binary, int i1, int i2)
-{
-	if (i1 < i2)
-	{
-		String temp = binary.substring(0, i1) + i2 + binary.substring(i1 + 1, i2) + i1;
-		if(i2 != binary.length() - 1)
-		{
-			temp += binary.substring(i2 + 1);
-		}
-		return temp;
-	}
-	String temp = binary.substring(0, i2) + i1 + binary.substring(i2 + 1, i1) + i2;
-		if(i1 != binary.length() - 1)
-		{
-			temp += binary.substring(i1 + 1);
-		}
-		return temp;
+	ongoing *= c;
+	ongoing /= r;
+	return ongoing;
 }
 
 
 
-
-
-
-public static int partition(ArrayList<String> arr, int low, int high) 
-    { 
-        String pivot = arr.get(high);  
-        int i = (low-1); // index of smaller element 
-        for (int j=low; j<high; j++) 
-        { 
-            // If current element is smaller than the pivot 
-            if (arr.get(j).compareTo(pivot) < 0) 
-            { 
-                i++; 
-  
-                // swap arr[i] and arr[j] 
-                String temp = arr.get(i); 
-                arr.set(i, arr.get(j));
-                arr.set(j, temp); 
-            } 
-        } 
-  
-        // swap arr[i+1] and arr[high] (or pivot) 
-        String temp = arr.get(i + 1); 
-        arr.set(i + 1, arr.get(high)); 
-        arr.set(high, temp); 
-  
-        return i+1; 
-    }
-public static void sort(ArrayList<String> arr, int low, int high) 
-    { 
-        if (low < high) 
-        { 
-            /* pi is partitioning index, arr[pi] is  
-              now at right place */
-            int pi = partition(arr, low, high); 
-  
-            // Recursively sort elements before 
-            // partition and after partition 
-            sort(arr, low, pi-1); 
-            sort(arr, pi+1, high); 
-        } 
-    } 
-}
