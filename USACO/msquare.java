@@ -11,13 +11,14 @@ class msquare{
 BufferedReader f = new BufferedReader(new FileReader("msquare.in"));
 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("msquare.out")));
 StringTokenizer reader = new StringTokenizer(f.readLine());
+int[][] target = new int[2][4];
 int[][] current = new int[2][4];
 for(int i = 0; i < 2; i++)
 {
-	for(int j = 0; j < 4; j++)
-	{
-		current[i][j] = Integer.parseInt(reader.nextToken());
-	}
+    for(int j = 0; j < 4; j++)
+    {
+        target[i][j] = Integer.parseInt(reader.nextToken());
+    }
 }
 
 
@@ -26,27 +27,31 @@ out.close();
 
 public static void a (int[][] current)
 {
-	int[] temp = current[0];
-	current[0] = current[1];
-	current[1] = temp;
+    int[] temp = current[0];
+    current[0] = current[1];
+    current[1] = temp;
 }
 
 public static void b (int[][] current)
 {
-	for(int i = 0; i < 2; i++)
-	{
-		int temp = current[i][3];
-		for(int j = 4; j > 0; j--)
-		{
-			current[i][j] = current[i][j-1];
-		}
-		current[i][0] = temp;
-	}
+    for(int i = 0; i < 2; i++)
+    {
+        int temp = current[i][3];
+        for(int j = 3; j > 0; j--)
+        {
+            current[i][j] = current[i][j-1];
+        }
+        current[i][0] = temp;
+    }
 }
 
 public static void c (int[][] current)
 {
-	
+    int temp = current[0][1];
+    current[0][1] = current[1][1];
+    current[1][1] = current[1][2];
+    current[1][2] = current[0][2];
+    current[0][2] = temp;
 }
 
 }
