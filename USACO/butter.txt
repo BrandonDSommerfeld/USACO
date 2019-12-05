@@ -19,25 +19,31 @@ for(int i = 0; i < cows; i++)
 {
 	starting[i] = Integer.parseInt(f.readLine());
 }
-int[][] adj = new int[pastures + 1][pastures + 1];
+int[][] lengths = new int[pastures + 1][pastures + 1];
+ArrayList<Integer>[] adj = new ArrayList[pastures + 1];
+for(int i = 0; i <= pastures; i++)
+{
+	adj[i] = new ArrayList<>();
+}
 for(int i = 0; i < paths; i++)
 {
 	reader = new StringTokenizer(f.readLine());
 	int first = Integer.parseInt(reader.nextToken());
 	int second = Integer.parseInt(reader.nextToken());
 	int distance= Integer.parseInt(reader.nextToken());
-	adj[first][second] = distance;
-	adj[second][first] = distance;
+	lengths[first][second] = distance;
+	lengths[second][first] = distance;
+	adj[first].add(second);
+	adj[second].add(first);
 }
-
-adj = algorithm(adj, starting);
+lengths = algorithm(lengths, adj, starting);
 int min = Integer.MAX_VALUE;
 for(int i = 1; i <= pastures; i++)
 {
 	int total = 0;
 	for(int j = 0; j < cows; j++)
 	{
-		total += adj[i][starting[j]];
+		total += lengths[starting[j]][i];
 	}
 	if(total < min)
 	{
@@ -48,32 +54,27 @@ out.println(min);
 out.close();
 }
 
-public static int[][] algorithm (int[][] distance, int[] starting)
+public static int[][] algorithm (int[][] distance, ArrayList<Integer>[] adj, int[] starting)
 {
-	int[][] distances = distance.clone();
-	int num = distance.length;
-	boolean change = true;
-	while (change)
-	{
-	change = false;
-	for(int k = 1; k < num; k++)
-{
+	int[][] distances = new int[distance.length][distance.length];
 	for(int i = 0; i < starting.length; i++)
 	{
-		for(int j = 1; j < num; j++)
+		LinkedList<Integer> queue = new LinkedList<>();
+		queue.add(starting[i]);
+		while(queue.peek() != null)
 		{
-			if((distances[starting[i]][j] == 0 || distances[starting[i]][k] + distances[k][j] < distances[starting[i]][j]) && distances[starting[i]][k] != 0 && distances[k][j] != 0 && starting[i] != j)
+			int current = queue.remove();
+			for(int j = 0; j < adj[current].size(); j++)
 			{
-				distances[starting[i]][j] = distances[starting[i]][k] + distances[k][j];
-				distances[j][starting[i]] = distances[starting[i]][k] + distances[k][j];
-				change = true;
+				if((distances[starting[i]][adj[current].get(j)] > distances[starting[i]][current] + distance[current][adj[current].get(j)] || distances[starting[i]][adj[current].get(j)] == 0) && adj[current].get(j) != starting[i])
+				{
+					queue.add(adj[current].get(j));
+					distances[starting[i]][adj[current].get(j)] = distances[starting[i]][current] + distance[current][adj[current].get(j)];
+				}
 			}
 		}
 	}
-}
-}
-return distances;
-
+	return distances;
 }
 
 }
