@@ -1,0 +1,79 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: butter
+*/
+import java.io.*;
+import java.util.*;
+
+class butter{
+  public static void main (String [] args) throws IOException {
+BufferedReader f = new BufferedReader(new FileReader("butter.in"));
+PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("butter.out")));
+StringTokenizer reader = new StringTokenizer(f.readLine());
+int cows = Integer.parseInt(reader.nextToken());
+int pastures = Integer.parseInt(reader.nextToken());
+int paths = Integer.parseInt(reader.nextToken());
+int[] starting = new int[cows];
+for(int i = 0; i < cows; i++)
+{
+	starting[i] = Integer.parseInt(f.readLine());
+}
+int[][] adj = new int[pastures + 1][pastures + 1];
+for(int i = 0; i < paths; i++)
+{
+	reader = new StringTokenizer(f.readLine());
+	int first = Integer.parseInt(reader.nextToken());
+	int second = Integer.parseInt(reader.nextToken());
+	int distance= Integer.parseInt(reader.nextToken());
+	adj[first][second] = distance;
+	adj[second][first] = distance;
+}
+
+adj = algorithm(adj, starting);
+int min = Integer.MAX_VALUE;
+for(int i = 1; i <= pastures; i++)
+{
+	int total = 0;
+	for(int j = 0; j < cows; j++)
+	{
+		total += adj[i][starting[j]];
+	}
+	if(total < min)
+	{
+		min = total;
+	}
+}
+out.println(min);
+out.close();
+}
+
+public static int[][] algorithm (int[][] distance, int[] starting)
+{
+	int[][] distances = distance.clone();
+	int num = distance.length;
+	boolean change = true;
+	while (change)
+	{
+	change = false;
+	for(int k = 1; k < num; k++)
+{
+	for(int i = 0; i < starting.length; i++)
+	{
+		for(int j = 1; j < num; j++)
+		{
+			if((distances[starting[i]][j] == 0 || distances[starting[i]][k] + distances[k][j] < distances[starting[i]][j]) && distances[starting[i]][k] != 0 && distances[k][j] != 0 && starting[i] != j)
+			{
+				distances[starting[i]][j] = distances[starting[i]][k] + distances[k][j];
+				distances[j][starting[i]] = distances[starting[i]][k] + distances[k][j];
+				change = true;
+			}
+		}
+	}
+}
+}
+return distances;
+
+}
+
+}
