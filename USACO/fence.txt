@@ -1,0 +1,29 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: fence
+*/
+import java.io.*;
+import java.util.*;
+
+class fence {
+  public static void main (String [] args) throws IOException {
+  BufferedReader f = new BufferedReader(new FileReader("fence.in"));
+  PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("fence.out")));
+	int lines = Integer.parseInt(f.readLine());
+	int[][] adj = new int[501][501];
+	for(int i = 0; i < lines; i++)
+	{
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int first = Integer.parseInt(reader.nextToken());
+		int second = Integer.parseInt(reader.nextToken());
+		adj[first][second] = 1;
+		adj[second][first] = 1;
+	}
+
+
+
+	out.close();
+	}
+
+}
