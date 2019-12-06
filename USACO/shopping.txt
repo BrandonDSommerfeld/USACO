@@ -1,0 +1,21 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: shopping
+*/
+import java.io.*;
+import java.util.*;
+
+class shopping {
+	private static int[] path;
+	private static int position;
+  public static void main (String [] args) throws IOException {
+  BufferedReader f = new BufferedReader(new FileReader("shopping.in"));
+  PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("shopping.out")));
+  
+	
+	
+	out.close();
+}
+
+}
