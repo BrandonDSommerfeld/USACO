@@ -213,7 +213,7 @@ public static int min(int[][] distances)
 	{
 		for(int j = 0; j < distances[0].length; j++)
 		{
-			if(distances[i][j] < min)
+			if(distances[i][j] < min && distances[i][j] != 0)
 			{
 				min = distances[i][j];
 			}
