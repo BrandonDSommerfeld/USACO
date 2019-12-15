@@ -1,9 +1,0 @@
-#BlueJ class context
-comment0.target=fence
-comment1.params=args
-comment1.target=void\ main(java.lang.String[])
-comment2.params=adj
-comment2.target=java.util.ArrayList\ tour(java.util.ArrayList[])
-comment3.params=adj
-comment3.target=java.util.ArrayList\ degree(java.util.ArrayList[])
-numComments=4
