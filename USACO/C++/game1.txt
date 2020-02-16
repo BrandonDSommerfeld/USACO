@@ -1,0 +1,48 @@
+/*
+ID: bdsomme1
+TASK: game1
+LANG: C++                 
+*/
+/*pragma handle-exceptions*/
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+
+int * game (int board [], int strategy, int size)
+{
+	int x  [] = {0, 0};
+	int * scores = x;
+	vector<int> clone;
+	for(int i = 0; i < size; i++)
+	{
+		clone.push_back(board[i]);
+	}
+	return scores;
+}
+
+int main() {
+    FILE *fin, *fout;
+		fin = fopen("game1.in", "r");
+		fout = fopen("game1.out", "w");
+    int size;
+		fscanf(fin, "%d", &size);
+		int board [size];
+		
+		for(int i = 0; i < size; i++)
+		{
+			fscanf(fin, "%d", &board[i]);
+		}
+		
+		int * strat1 = game (board, 0, size);
+		int * strat2 = game (board, 1, size);
+		cout << *strat1 << "\n";
+		cout << *(strat1 + 1) << "\n";
+		cout << *strat2 << "\n";
+		cout << *(strat2 + 1) << "\n";
+		
+    return 0;
+}
