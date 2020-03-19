@@ -1,0 +1,77 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: game1
+*/
+
+import java.io.*;
+import java.util.*;
+
+class game1 {
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("game1.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("game1.out")));
+		
+		int size = Integer.parseInt(f.readLine());
+		ArrayList<Integer> board = new ArrayList<>();
+		String next = f.readLine();
+		while(next != null)
+		{
+			StringTokenizer reader = new StringTokenizer(next);
+			while(reader.hasMoreTokens())
+			{
+				board.add(Integer.parseInt(reader.nextToken()));
+			}
+			next = f.readLine();
+		}
+		int[] game1 = game(board);
+		out.println(game1[0] + " " + game1[1]);
+		
+		out.close();
+		}
+		
+		
+		public static int[] game (ArrayList<Integer> board)
+		{
+			int length = board.size();
+			int[][][] scores = new int[length][length][2];
+			int player = (length + 1) % 2;
+			for(int i = 0; i < length; i++)
+			{
+				for(int j = 0; j < length; j++)
+				{
+					if(i + j < length)
+					{
+						try
+						{
+							if(i == 0)
+							{
+								scores[j][j][player] = board.get(j);
+							}
+							else
+							{
+								int[] previous1 = scores[j + 1][i + j];
+								int[] previous2 = scores[j][i + j - 1];
+								if(previous1[player] + board.get(j) > previous2[player] + board.get(i + j))
+								{
+									scores[j][i + j][player] = previous1[player] + board.get(j);
+									scores[j][i + j][(player + 1) % 2] = previous1[(player + 1) % 2];
+								}
+								else
+								{
+									scores[j][i + j][player] = previous2[player] + board.get(i + j);
+									scores[j][i + j][(player + 1) % 2] = previous2[(player + 1) % 2];
+								}
+							}
+						}
+						catch (Exception e)
+						{
+							
+						}
+				}
+			}
+			player = (player + 1) % 2;
+			}
+			return scores[0][length-1];
+		}
+}
