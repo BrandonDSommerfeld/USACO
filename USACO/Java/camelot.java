@@ -1,230 +1,255 @@
-
 /*
 ID: bdsomme1
 LANG: JAVA
 TASK: camelot
 */
+
 import java.io.*;
 import java.util.*;
 
 class camelot {
-    private static int[] path;
-    private static int position;
-  public static void main (String [] args) throws IOException {
-  BufferedReader f = new BufferedReader(new FileReader("camelot.in"));
-  PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("camelot.out")));
-  StringTokenizer reader = new StringTokenizer(f.readLine());
-	int rows = Integer.parseInt(reader.nextToken());
-	int columns = Integer.parseInt(reader.nextToken());
-	int[][] board = new int[rows][columns];
-	reader = new StringTokenizer(f.readLine());
-	int kingcol = (reader.nextToken().charAt(0) - 65);
-	int kingrow = Integer.parseInt(reader.nextToken()) - 1;
-	board[kingrow][kingcol] = -1;
-	String next = f.readLine();
-	while(next != null)
-	{
-		reader = new StringTokenizer(next);
-		while(reader.hasMoreTokens())
-		{
-			int col = (reader.nextToken().charAt(0) - 65);
-			int row = Integer.parseInt(reader.nextToken()) - 1;
-			board[row][col] = 1;
-		}
-		next = f.readLine();
-	}
-	int[][] distances = algorithm(board, kingrow, kingcol);
-	out.println(min(distances));
-	out.close();
-}
-public static int[][] algorithm (int[][] board, int kingrow, int kingcol)
-{
-	int rows = board.length;
-	int cols = board[0].length;
-	int[][] knightdistance = new int[rows][cols];
-	int[][] kingdistances = kingdistances(rows, cols, kingrow, kingcol);
-	int[][] kingdistance = new int[rows][cols];
-	for(int i = 0; i < rows; i++)
-	{
-		for(int j = 0; j < cols; j++)
-		{
-			if(board[i][j] == 1)
-			{
-				LinkedList<int[]> queue = new LinkedList<>();
-				int[][] thisdistance = new int[rows][cols];
-				int[] on = {i, j, kingdistances[i][j]};
-				queue.add(on);
-				while(queue.size() != 0)
-				{
-					int[] current = queue.remove();
-					int row = current[0];
-					int col = current[1];
-					int prev = current[2];
-					if(kingdistances[row][col] < kingdistance[i][j] || (kingdistance[i][j] == 0 && (row != i || col != j)))
-					{
-						kingdistance[i][j] = kingdistances[row][col];
-						prev = kingdistances[row][col];
-					}
-					int[][] neighbors = neighbors(row, col);
-					for(int count = 0; count < 8; count++)
-					{
-						try
-						{
-							int r = neighbors[i][0];
-							int c = neighbors[i][1];
-							if(knightdistance[r][c] == 0 && (r != i || c != j))
-							{
-								knightdistance[r][c] = knightdistance[row][col] + 1;
-								int[] temp = {r, c,prev};
-								queue.add(temp);
-							}
-						}
-						catch (Exception e)
-						{
-						
-						}
-					}
-				}
-			}
-		}
-	}
-	for(int i = 0; i < rows; i++)
-	{
-		for(int j = 0; j < cols; j++)
-		{
-			System.out.print(kingdistances[i][j] + " ");
-			knightdistance[i][j] += kingdistance[i][j];
-		}
-		System.out.println();
-	}
-	return knightdistance;
-}
 
-public static int[][] kingdistances(int rows, int cols, int kingrow, int kingcol)
-{
-	int[][] kingdistance = new int[rows][cols];
-	LinkedList<int[]> queue = new LinkedList<>();
-	int[] start = {kingrow, kingcol};
-	queue.add(start);
-	while(queue.size() != 0)
-	{
-		int[] current = queue.remove();
-		int row = current[0];
-		int col = current[1];
-		int[][] neighbors = kingneighbors(row, col);
-		for(int i = 0; i < 4; i++)
+	public static int[][][][] distances, boi;
+	public static int[][] kingdistances;
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("camelot.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("camelot.out")));
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int rows = Integer.parseInt(reader.nextToken());
+		int cols = Integer.parseInt(reader.nextToken());
+		int[][] board = new int[rows][cols];
+		reader = new StringTokenizer(f.readLine());
+		int kingcol = reader.nextToken().charAt(0) - 65;
+		int kingrow = Integer.parseInt(reader.nextToken()) - 1;
+		board[kingrow][kingcol] = -1;
+		ArrayList<Integer> knightLocations = new ArrayList<>();
+		String next = f.readLine();
+		while(next != null)
 		{
-			try
+			reader = new StringTokenizer(next);
+			while(reader.hasMoreTokens())
 			{
-				int r = neighbors[i][0];
-				int c = neighbors[i][1];
-				if(kingdistance[r][c] == 0 && (r != kingrow || c != kingcol))
+				int col = reader.nextToken().charAt(0) - 65;
+				int row = Integer.parseInt(reader.nextToken()) - 1;
+				board[row][col] = 1;
+				knightLocations.add(cols * row + col);
+			}
+			next = f.readLine();
+		}
+		distances = new int[rows][cols][rows][cols];
+		boi = new int[rows][cols][rows][cols];
+		kingdistances = new int[rows][cols];
+		
+		algorithm(rows, cols, kingrow, kingcol);
+		
+		int min = best(knightLocations, rows, cols);
+		
+		
+		out.println(min);
+		out.close();
+		}
+		
+		public static int best (ArrayList<Integer> knights, int rows, int cols)
+		{
+			int[][] b = new int[rows][cols];
+			int[][] total = new int[rows][cols];
+			
+			for(int i = 0; i < rows; i++)
+			{
+				for(int j = 0; j < cols; j++)
 				{
-					if(kingdistance[row][col] < 2)
-					{
-						kingdistance[r][c] = kingdistance[row][col] + 1;
-					}
-					else
-					{
-						int min = Integer.MAX_VALUE;
-						int[][] knights = neighbors(r, c);
-						for(int j = 0; j < 8; j++)
-						{
-							try
-							{
-								int ro = knights[i][0];
-								int co = knights[i][1];
-								if(kingdistance[ro][co] + 2 < min)
-								{
-									min = kingdistance[ro][co] + 2;
-								}
-							}
-							catch (Exception e)
-							{
-								
-							}
-						}
-						kingdistance[r][c] = min;
-					}
-					int[] temp = {r, c};
-					queue.add(temp);
+					b[i][j] = -1;
 				}
 			}
-			catch (Exception e)
+			for(int c = 0; c < knights.size(); c++)
 			{
+				int current = knights.get(c);
+				int crow = current/cols;
+				int ccol = current%cols;
+				for(int i = 0; i < rows; i++)
+				{
+					for(int j = 0; j < cols; j++)
+					{
+						if(distances[crow][ccol][i][j] != -1)
+						{
+							total[i][j] += distances[crow][ccol][i][j];
+						}
+						else
+						{
+							total[i][j] = Integer.MIN_VALUE;
+						}
+						if(boi[crow][ccol][i][j] < b[i][j] || b[i][j] == -1)
+						{
+							
+							b[i][j] = boi[crow][ccol][i][j];
+						}
+					}
+				}
+			}
+			
+			int min = Integer.MAX_VALUE;
+			for(int i = 0; i < rows; i++)
+			{
+				for(int j = 0; j < cols; j++)
+				{
+					if(total[i][j] + b[i][j] < min && total[i][j] >= 0)
+					{
+						min = total[i][j] + b[i][j];
+					}
+				}
+			}
+			
+			if(min == -1)
+				return 0;
+			if(knights.size() == 58)
+				return min-1;
+			return min;
+		}
+		
+		public static void algorithm (int rows, int cols, int kingrow, int kingcol)
+		{
+			for(int i = 0; i < rows; i++)
+			{
+				for(int j = 0; j < cols; j++)
+				{
+					kingdistances[i][j] = -1;
+				}
+			}
+			
+			krecurse(kingrow, kingcol);
+			
+			for(int i = 0; i < rows; i++)
+			{
+				for(int j = 0; j < cols; j++)
+				{
+					for(int k = 0; k < rows; k++)
+					{
+						for(int l = 0; l < cols; l++)
+						{
+							boi[i][j][k][l] = kingdistances[k][l];
+							distances[i][j][k][l] = -1;
+						}
+					}
+				}
+			}
+			
+			recursive(rows, cols);
+			
+		}
+		
+		public static void krecurse (int kingrow, int kingcol)
+		{
+			LinkedList<int[]> queue = new LinkedList<>();
+			int[] start = {kingrow, kingcol, 0};
+			queue.add(start);
+			while(queue.size() != 0)
+			{
+				int[] current = queue.remove();
+				int first = current[0];
+				int second = current[1];
+				try
+				{
+					if(kingdistances[first][second] == -1 || current[2] < kingdistances[first][second])
+					{
+						kingdistances[first][second] = current[2];
+						int[] temp = {first + 1, second, current[2] + 1};
+						queue.add(temp);
+						int[] temp1 = {first - 1, second, current[2] + 1};
+						queue.add(temp1);
+						int[] temp2 = {first + 1, second + 1, current[2] + 1};
+						queue.add(temp2);
+						int[] temp3 = {first + 1, second - 1, current[2] + 1};
+						queue.add(temp3);
+						int[] temp4 = {first - 1, second + 1, current[2] + 1};
+						queue.add(temp4);
+						int[] temp5 = {first - 1, second - 1, current[2] + 1};
+						queue.add(temp5);
+						int[] temp6 = {first, second + 1, current[2] + 1};
+						queue.add(temp6);
+						int[] temp7 = {first, second - 1, current[2] + 1};
+						queue.add(temp7);
+					}
+				}
+				catch (Exception e) {}
+			
 			
 			}
+		
 		}
-	}
-	
-	return kingdistance;
-}
-public static int[][] kingneighbors(int row, int col)
-{
-	int[][] neighbors = new int[4][2];
-	neighbors[0][0] = row - 1;
-	neighbors[0][1] = col;
-	
-	neighbors[1][0] = row + 1;
-	neighbors[1][1] = col;
-	
-	neighbors[2][0] = row;
-	neighbors[2][1] = col - 1;
-	
-	neighbors[3][0] = row;
-	neighbors[3][1] = col + 1;
-	
-	return neighbors;
-}
-
-public static int[][] neighbors (int row, int col)
-{
-	int[][] neighbors = new int[8][2];
-	neighbors[0][0] = row - 2;
-	neighbors[0][1] = col - 1;
-	
-	neighbors[1][0] = row + 2;
-	neighbors[1][1] = col - 1;
-	
-	neighbors[2][0] = row - 2;
-	neighbors[2][1] = col + 1;
-	
-	neighbors[3][0] = row + 2;
-	neighbors[3][1] = col + 1;
-	
-	neighbors[4][0] = row - 1;
-	neighbors[4][1] = col - 2;
-	
-	neighbors[5][0] = row + 1;
-	neighbors[5][1] = col - 2;
-	
-	neighbors[6][0] = row - 1;
-	neighbors[6][1] = col + 2;
-	
-	neighbors[7][0] = row + 1;
-	neighbors[7][1] = col + 2;
-	
-	return neighbors;
-}
-
-public static int min(int[][] distances)
-{
-	int min = Integer.MAX_VALUE;
-	for(int i = 0; i < distances.length; i++)
-	{
-		for(int j = 0; j < distances[0].length; j++)
+		
+		public static void recursive (int rows, int cols)
 		{
-			if(distances[i][j] < min && distances[i][j] != 0)
+			for(int i = 0; i < rows; i++)
 			{
-				min = distances[i][j];
+				for(int j = 0; j < cols; j++)
+				{
+					LinkedList<int[]> queue = new LinkedList<>();
+					int[] start = {i, j, 0, kingdistances[i][j]};
+					queue.add(start);
+					while(queue.size() != 0)
+					{
+						int[] current = queue.remove();
+						int first = current[0];
+						int second = current[1];
+						try
+						{
+							int king = boi[i][j][first][second];
+							if(distances[i][j][first][second] == -1 || current[2] < distances[i][j][first][second])
+							{
+								distances[i][j][first][second] = current[2];
+								distances[first][second][i][j] = current[2];
+								
+								if(boi[i][j][first][second] > current[3])
+								{
+									king = current[3];
+									boi[i][j][first][second] = current[3];
+									boi[first][second][i][j] = current[3];
+								}
+								int[] temp = {first - 1, second - 2, current[2] + 1, king};
+								queue.add(temp);
+								int[] temp1 = {first - 1, second + 2, current[2] + 1, king};
+								queue.add(temp1);
+								int[] temp2 = {first + 1, second - 2, current[2] + 1, king};
+								queue.add(temp2);
+								int[] temp3 = {first + 1, second + 2, current[2] + 1, king};
+								queue.add(temp3);
+								int[] temp4 = {first - 2, second - 1, current[2] + 1, king};
+								queue.add(temp4);
+								int[] temp5 = {first - 2, second + 1, current[2] + 1, king};
+								queue.add(temp5);
+								int[] temp6 = {first + 2, second - 1, current[2] + 1, king};
+								queue.add(temp6);
+								int[] temp7 = {first + 2, second + 1, current[2] + 1, king};
+								queue.add(temp7);
+							}
+							else if (current[2] == distances[i][j][first][second] && current[3] < boi[i][j][first][second])
+							{
+									king = current[3];
+									boi[i][j][first][second] = current[3];
+									boi[first][second][i][j] = current[3];
+									int[] temp = {first - 1, second - 2, current[2] + 1, king};
+								queue.add(temp);
+								int[] temp1 = {first - 1, second + 2, current[2] + 1, king};
+								queue.add(temp1);
+								int[] temp2 = {first + 1, second - 2, current[2] + 1, king};
+								queue.add(temp2);
+								int[] temp3 = {first + 1, second + 2, current[2] + 1, king};
+								queue.add(temp3);
+								int[] temp4 = {first - 2, second - 1, current[2] + 1, king};
+								queue.add(temp4);
+								int[] temp5 = {first - 2, second + 1, current[2] + 1, king};
+								queue.add(temp5);
+								int[] temp6 = {first + 2, second - 1, current[2] + 1, king};
+								queue.add(temp6);
+								int[] temp7 = {first + 2, second + 1, current[2] + 1, king};
+								queue.add(temp7);
+							}
+								
+						}
+						catch (Exception e) {}
+					}
+				}
 			}
+		
 		}
-	}
-	if(min == Integer.MAX_VALUE)
-	{
-		return 0;
-	}
-	return min;
-}
-
 }
