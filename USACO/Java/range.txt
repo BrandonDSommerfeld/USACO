@@ -1,0 +1,101 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: range
+*/
+
+import java.io.*;
+import java.util.*;
+
+class range {
+	
+	public static int[] occur;
+	
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("range.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("range.out")));
+		int size = Integer.parseInt(f.readLine());
+		
+		
+		boolean[][] field = new boolean[size][size];
+		
+		for(int i = 0; i < size; i++)
+		{
+			String in = f.readLine();
+			for(int j = 0; j < size; j++)
+			{
+				if(Integer.parseInt(in.substring(j, j + 1)) == 0)
+				{
+					field[i][j] = true;
+				}
+			}
+		}
+		
+		occur = new int[size + 1];
+		
+		recursive(field, 2);
+		
+		for(int i = 2; i <= size; i++)
+		{
+			if(occur[i] != 0)
+				out.println(i + " " + occur[i]);
+		}
+		
+		out.close();
+		}
+		
+		
+		public static void recursive(boolean[][] field, int size)
+		{
+			int length = field.length;
+			boolean[][] next = new boolean[length-1][length-1];
+			
+			for(int i = 0; i < length; i++)
+			{
+				for(int j = 0; j < length; j++)
+				{
+					if(field[i][j])
+					{
+						try
+						{
+							next[i][j] = true;
+						}
+						catch (Exception e) {}
+						try
+						{
+							next[i][j-1] = true;
+						}
+						catch (Exception e) {}
+						try
+						{
+							next[i-1][j] = true;
+						}
+						catch (Exception e) {}
+						try
+						{
+							next[i-1][j-1] = true;
+						}
+						catch (Exception e) {}
+					}
+				}
+			}
+			
+			int count = 0;
+			for(int i = 0; i < length - 1; i++)
+			{
+				for(int j = 0; j < length - 1; j++)
+				{
+					if(!next[i][j])
+					{
+						count++;
+					}
+				}
+			}
+			
+			occur[size] = count;
+			if(length > 2)
+				recursive(next, size + 1);
+			
+		}
+		
+}
