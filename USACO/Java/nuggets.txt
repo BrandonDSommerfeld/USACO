@@ -1,0 +1,104 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: nuggets
+*/
+
+import java.io.*;
+import java.util.*;
+
+class nuggets {
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("nuggets.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("nuggets.out")));
+		int size = Integer.parseInt(f.readLine());
+		
+		int[] sizes = new int[size];
+		boolean one = false;
+		
+		for(int i = 0; i < size; i++)
+		{
+			sizes[i] = Integer.parseInt(f.readLine());
+			if(sizes[i] == 1)
+			{
+				one = true;
+			}
+		}
+		
+		if(one || size == 1)
+		{
+			out.println(0);
+		}
+		else
+		{
+			int limit = Integer.MAX_VALUE;
+			for(int i = 0; i < size - 1; i++)
+			{
+				for(int j = i + 1; j < size; j++)
+				{
+					int temp = gcd(sizes[i], sizes[j]);
+					if(temp == 1)
+					{
+						int boi = sizes[i] * sizes[j] - sizes[i] - sizes[j];
+						if(boi < limit)
+						{
+							limit = boi;
+						}
+					}
+				}
+			}
+			
+			if(limit == Integer.MAX_VALUE)
+			{
+				out.println(0);
+			}
+			else
+			{
+				boolean[] dynamic = new boolean[limit + 1];
+				dynamic[0] = true;
+				int highest = 0;
+				for(int i = 0; i <= limit; i++)
+				{
+					if(dynamic[i])
+					{
+						for(int j = 0; j < size; j++)
+						{
+							try
+							{
+								dynamic[i + sizes[j]] = true;
+							}
+							catch (Exception e) {}
+						}
+					}
+					else
+					{
+						highest = i;
+					}
+				}
+				out.println(highest);
+			}
+		}
+		
+		out.close();
+		
+		}
+		
+		
+		
+		public static int gcd(int a, int b)
+		{
+			if(a > b)
+			{
+				if(a % b == 0)
+				{
+					return b;
+				}
+				return gcd(a % b, b);
+			}
+			if(b % a == 0)
+			{
+				return a;
+			}
+			return gcd(a, b % a);
+		}
+}
