@@ -1,0 +1,58 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: fence9
+*/
+
+import java.io.*;
+import java.util.*;
+
+class fence9 {
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("fence9.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("fence9.out")));
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int x1 = Integer.parseInt(reader.nextToken());
+		int y1 = Integer.parseInt(reader.nextToken());
+		int x2 = Integer.parseInt(reader.nextToken());
+		
+		double area = shoelace(x1, y1, x2, 0);
+		
+		int border = gcd(x1, y1) + gcd(Math.abs(x1-x2), y1) + x2;
+		
+		int inside = (int) Math.round((area + 1 - ((double) border)/2));
+		out.println(inside);
+		
+		out.close();
+		
+		
+		}
+		
+		
+		public static double shoelace(int x1, int y1, int x2, int y2)
+		{
+			return ((double) Math.abs(x1 * y2 - x2 * y1))/2;
+		}
+		
+		public static int gcd(int a, int b)
+		{
+			if(a == 0)
+				return b;
+			if(b == 0)
+				return a;
+			if(a > b)
+			{
+				if(a % b == 0)
+				{
+					return b;
+				}
+				return gcd(a % b, b);
+			}
+			if(b % a == 0)
+			{
+				return a;
+			}
+			return gcd(a, b % a);
+		}
+		
+}
