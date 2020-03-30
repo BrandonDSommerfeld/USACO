@@ -1,0 +1,63 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: heritage
+*/
+
+import java.io.*;
+import java.util.*;
+
+class heritage {
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("heritage.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("heritage.out")));
+		
+		String first = f.readLine();
+		String second = f.readLine();
+		
+		out.println(recursive(first, second));
+		
+		out.close();
+		
+		}
+		
+		public static String recursive(String first, String second)
+		{
+			if(first.length() == 1)
+			{
+				return first;
+			}
+			if(first.length() == 0)
+			{
+				return "";
+			}
+		
+			
+			String root = second.substring(0, 1);
+			
+			int split = first.indexOf(root);
+			String tleft = first.substring(0, split);
+			
+			String tright = "";
+			if(first.length() > split + 1)
+			{
+				
+				tright = first.substring(split + 1);
+			}
+			String bleft = "";
+			if(tleft.length() > 0)
+			{
+				bleft = second.substring(1, split + 1);
+			}
+			String bright = "";
+			if(tright.length() > 0)
+			{
+				
+				bright = second.substring(split + 1);
+			}
+			String lorder = recursive(tleft, bleft);
+			String rorder = recursive(tright, bright);
+			return lorder + rorder + root;
+		}
+		
+}
