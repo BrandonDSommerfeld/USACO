@@ -1,0 +1,59 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: rockers
+*/
+
+import java.io.*;
+import java.util.*;
+
+class rockers {
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("rockers.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("rockers.out")));
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int songs = Integer.parseInt(reader.nextToken());
+		int size = Integer.parseInt(reader.nextToken());
+		int disks = Integer.parseInt(reader.nextToken());
+		
+		int[] lengths = new int[songs];
+		reader = new StringTokenizer(f.readLine());
+		for(int i = 0; i  < songs; i++)
+		{
+			lengths[i] = Integer.parseInt(reader.nextToken());
+		}
+		
+		out.println(recursive(songs, size, disks - 1, lengths, 0, size));
+		out.close();
+		
+		}
+		
+		public static int recursive (int songs, int size, int disksleft, int[] lengths, int start, int room)
+		{
+			if(start == songs-1)
+			{
+				if(lengths[start] <= room || (disksleft > 0 && lengths[start] <= size))
+				{
+					return 1;
+				}
+				return 0;
+			}
+			int without = recursive(songs, size, disksleft, lengths, start + 1, room);
+			if(lengths[start] <= room)
+			{
+				int with = recursive(songs, size, disksleft, lengths, start + 1, room-lengths[start]) + 1;
+				
+				return Math.max(with, without);
+			}
+			else
+			{
+				if(lengths[start] > size || disksleft == 0)
+				{
+					return without;
+				}
+				int with = recursive(songs, size, disksleft - 1, lengths, start + 1, size - lengths[start]) + 1;
+				
+				return Math.max(with, without);
+			}
+		}
+}
