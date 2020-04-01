@@ -1,0 +1,152 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: fence6
+*/
+
+import java.io.*;
+import java.util.*;
+
+class fence6 {
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("fence6.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("fence6.out")));
+		
+		int fences = Integer.parseInt(f.readLine());
+		
+		int[] lengths = new int[fences+1];
+		TreeSet<Integer>[] adj = new TreeSet[fences+1];
+		
+		for(int i = 0; i < fences; i++)
+		{
+			StringTokenizer reader = new StringTokenizer(f.readLine());
+			int label = Integer.parseInt(reader.nextToken());
+			int length = Integer.parseInt(reader.nextToken());
+			int num1 = Integer.parseInt(reader.nextToken());
+			int num2 = Integer.parseInt(reader.nextToken());
+			TreeSet<Integer> n1 = new TreeSet<>();
+			reader = new StringTokenizer(f.readLine());
+			for(int j = 0; j < num1; j++)
+			{
+				n1.add(Integer.parseInt(reader.nextToken()));
+			}
+			reader = new StringTokenizer(f.readLine());
+			for(int j = 0; j < num2; j++)
+			{
+				n1.add(-1 * Integer.parseInt(reader.nextToken()));
+			}
+			lengths[label] = length;
+			adj[label] = n1;
+		}
+		
+		out.println(algorithm(lengths, adj, fences));
+		
+		
+		
+		out.close();
+		
+		}
+		
+		public static int algorithm(int[] lengths, TreeSet<Integer>[] adj, int fences)
+		{
+			int min = Integer.MAX_VALUE;
+			for(int i = 1; i <= fences; i++)
+			{
+				LinkedList<ArrayList<Integer>> queue = new LinkedList<>();
+				ArrayList<Integer> start = new ArrayList<>();
+				start.add(i);
+				queue.add(start);
+				while(queue.size() != 0)
+				{
+					ArrayList<Integer> current = queue.remove();
+					
+					int latest = current.get(current.size() - 1);
+					TreeSet<Integer> neighbors = adj[Math.abs(latest)];
+					boolean loop = false, done = false;
+					for(Integer n: neighbors)
+					{
+						if(latest < 0)
+						{
+							if(n < 0)
+							{
+								if(current.contains(n) || current.contains(-1 * n))
+								{
+									loop = true;
+									if(adj[i].contains(latest))
+									{
+										done = true;
+									}
+								}
+							}
+						}
+						else
+						{
+							if(n > 0)
+							{
+								if(current.contains(n) || current.contains(-1 * n))
+								{
+									loop = true;
+									if(adj[i].contains(-1 * latest))
+									{
+										done = true;
+									}
+								}
+							}
+						}
+					}
+					if(done)
+					{
+						
+						int sum = 0;
+						for(int j = 0; j < current.size(); j++)
+						{
+							sum += lengths[Math.abs(current.get(j))];
+						}
+						if(sum < min)
+						{
+							min = sum;
+						}
+					}
+					else if(!loop)
+					{
+						for(Integer n: neighbors)
+						{
+							if(latest < 0)
+							{
+								if(n < 0)
+								{
+									ArrayList<Integer> copy = (ArrayList<Integer>) current.clone();
+									if(adj[-1 * n].contains(latest))
+									{
+										copy.add(-1 * n);
+									}
+									else
+									{
+										copy.add(n);
+									}
+									queue.add(copy);
+								}
+							}
+							else
+							{
+								if(n > 0)
+								{
+									ArrayList<Integer> copy = (ArrayList<Integer>) current.clone();
+									if(adj[n].contains(latest))
+									{
+										copy.add(-1 * n);
+									}
+									else
+									{
+										copy.add(n);
+									}
+									queue.add(copy);
+								}
+							}
+						}
+					}
+				}
+			}
+			return min;
+		}
+}
