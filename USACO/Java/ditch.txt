@@ -1,0 +1,86 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: ditch
+*/
+
+import java.io.*;
+import java.util.*;
+
+class ditch{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("ditch.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("ditch.out")));
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int edges = Integer.parseInt(reader.nextToken());
+		int nodes = Integer.parseInt(reader.nextToken());
+		int[][] adj = new int[nodes + 1][nodes + 1];
+		for(int i = 0; i < edges; i++)
+		{
+			reader = new StringTokenizer(f.readLine());
+			int first = Integer.parseInt(reader.nextToken());
+			int second = Integer.parseInt(reader.nextToken());
+			int length = Integer.parseInt(reader.nextToken());
+			adj[first][second] += length;
+		}
+		
+		out.println(algorithm(adj, nodes));
+		out.close();
+		
+		}
+		
+		public static int algorithm(int[][] adj, int nodes)
+		{
+			int total = 0;
+			int[] previous = new int[nodes + 1];
+			while(true)
+			{
+				int[] flow = new int[nodes + 1];
+				boolean[] visited = new boolean[nodes + 1];
+				flow[1] = 10000000;
+				while(true)
+				{
+					int maxflow = 0;
+					int maxplace = 0;
+					for(int i = 1; i <= nodes; i++)
+					{
+						if(flow[i] > maxflow && !visited[i])
+						{
+							maxflow = flow[i];
+							maxplace = i;
+						}
+					}
+					if(maxplace == 0)
+					{
+						break;
+					}
+						visited[maxplace] = true;
+						for(int i = 1; i <= nodes; i++)
+						{
+							if(!visited[i])
+							{
+								int num = Math.min(maxflow, adj[maxplace][i]);
+								if(num > flow[i])
+								{
+									flow[i] = num;
+									previous[i] = maxplace;
+								}
+							}
+						}
+				}
+				if(flow[nodes] == 0)
+					break;
+					
+				total += flow[nodes];
+				int i = nodes;
+				while(i != 1)
+				{
+					int p = previous[i];
+					adj[p][i] -= flow[nodes];
+					adj[i][p] += flow[nodes];
+					i=p;
+				}
+			}
+			return total;
+		}
+}
