@@ -1,0 +1,177 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: job
+*/
+
+import java.io.*;
+import java.util.*;
+
+class job{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("job.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("job.out")));
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int jobs = Integer.parseInt(reader.nextToken());
+		int A = Integer.parseInt(reader.nextToken());
+		int B = Integer.parseInt(reader.nextToken());
+		int[] atimes = new int[A];
+		int[] btimes = new int[B];
+		String line = f.readLine();
+		int count = 0;
+		while(line != null)
+		{
+			reader = new StringTokenizer(line);
+			while(reader.hasMoreTokens())
+			{
+				int speed = Integer.parseInt(reader.nextToken());
+				if(count < A)
+				{
+					atimes[count] = speed;
+				}
+				else
+				{
+					btimes[count - A] = speed;
+				}
+				count++;
+			}
+			line = f.readLine();
+		}
+		
+		Arrays.sort(atimes);
+		Arrays.sort(btimes);
+		
+		int[][] dynamicA = new int[jobs + 1][A];
+		int[] bestA = new int[jobs + 1];
+		bestA[1] = atimes[0];
+		dynamicA[1][0] = 1;
+		for(int j = 2; j <= jobs; j++)
+		{
+			int lowest = Integer.MAX_VALUE;
+			int place = -1;
+			for(int a = 0; a < A; a++)
+			{
+				int temptime = atimes[a] * (dynamicA[j-1][a] + 1);
+				if(temptime < lowest)
+				{
+					lowest = temptime;
+					place = a;
+				}
+			}
+			for(int a = 0; a < A; a++)
+			{
+				dynamicA[j][a] = dynamicA[j-1][a];
+				if(a == place)
+				{
+					dynamicA[j][a]++;
+				}
+			}
+			if (lowest < bestA[j-1])
+			{
+				bestA[j] = bestA[j-1];
+			}
+			else
+			{
+				bestA[j] = lowest;
+			}
+		}
+		
+		int[] intimes = new int[jobs];
+		int on = 0;
+		for(int a = 0; a < A; a++)
+		{
+			if(dynamicA[jobs][a] > 0)
+			{
+				for(int c = 1; c <= dynamicA[jobs][a]; c++)
+				{
+					intimes[on] = atimes[a] * c;
+					on++;
+				}
+			}
+		}
+		Arrays.sort(intimes);
+		int[] availability = new int[B];
+		for(int b = 0; b < B; b++)
+		{
+			availability[b] = -100;
+		}
+		int[] vacancy = new int[B];
+		int[] times = new int[B];
+		int bestB = 0;
+		for(int j = jobs - 1; j >= 0; j--)
+		{
+			boolean handled = false;
+			for(int b = 0; b < B && !handled; b++)
+			{
+				if(availability[b] >= intimes[j] + btimes[b])
+				{
+					handled = true;
+					vacancy[b] += availability[b] - (intimes[j] + btimes[b]);
+					availability[b] = intimes[j];
+				}
+			}
+			if(!handled)
+			{
+				for(int b = 0; b < B && !handled; b++)
+				{
+					if(availability[b] != -100)
+					{
+					int extra = availability[b] - intimes[j];
+					if(extra < 0)
+					{
+						extra = 0;
+					}
+					if(vacancy[b] + extra >= btimes[b])
+					{
+						handled = true;
+						availability[b] = intimes[j];
+						vacancy[b] -= (btimes[b] - extra);
+					}
+					}
+				}
+			}
+			if(!handled)
+			{
+				int min = Integer.MAX_VALUE;
+				int place = -1;
+				for(int b = 0; b < B; b++)
+				{
+					if(availability[b] != -100)
+					{
+						int extra = availability[b] - intimes[j];
+						if(extra < 0)
+						{
+							extra = 0;
+						}
+						int time = times[b] + (btimes[b] - vacancy[b] - extra);
+						if(time < min)
+						{
+							min = time;
+							place = b;
+						}
+					}
+					else
+					{
+						int time = intimes[j] + btimes[b];
+						if(time < min)
+						{
+							min = time;
+							place = b;
+						}
+					}
+				}
+				if(min > bestB)
+				{
+						bestB = min;
+				}
+					times[place] = min;
+					availability[place] = intimes[j];
+					vacancy[place] = 0;
+			}
+		}
+		
+		out.println(bestA[jobs] + " " + bestB);
+		out.close();
+		
+		}
+}
