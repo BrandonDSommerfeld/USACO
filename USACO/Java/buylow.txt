@@ -1,0 +1,110 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: buylow
+*/
+import java.io.*;
+import java.util.*;
+import java.math.BigInteger;
+
+class buylow{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("buylow.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("buylow.out")));
+		int days = Integer.parseInt(f.readLine());
+		int[] prices = new int[days];
+		int day = 0;
+		String line = f.readLine();
+		while(line != null)
+		{
+			StringTokenizer reader = new StringTokenizer(line);
+			while(reader.hasMoreTokens())
+			{
+				prices[day] = Integer.parseInt(reader.nextToken());
+				day++;
+			}
+			
+			line = f.readLine();
+		}
+		
+		int[] best = new int[days];
+		BigInteger[] count = new BigInteger[days];
+		ArrayList<Integer>[] previous = new ArrayList[days];
+		
+		for(int d = 0; d < days; d++)
+		{
+			for(int prev = d-1; prev >= 0; prev--)
+			{
+				if(prices[prev] > prices[d])
+				{
+					if(best[prev] + 1 > best[d])
+					{
+						best[d] = best[prev] + 1;
+						count[d] = count[prev];
+						previous[d] = new ArrayList<>();
+						previous[d].add(prev);
+					}
+					else if (best[prev] + 1 == best[d])
+					{
+						boolean before = false;
+						int place = -1;
+						for(Integer p: previous[d])
+						{
+							if(prices[p] == prices[prev])
+							{
+								before = true;
+								place = p;
+							}
+						}
+						if(!before)
+						{
+							count[d] = count[d].add(count[prev]);
+							previous[d].add(prev);
+						}
+					}
+				}
+			}
+			if(best[d] == 0)
+			{
+				best[d] = 1;
+				count[d] = new BigInteger("1");
+			}
+		}
+		
+		int max = 0;
+		BigInteger occ = new BigInteger("0");
+		ArrayList<Integer> encountered = new ArrayList<>();
+		for(int d = days - 1; d >= 0; d--)
+		{
+			if(best[d] > max)
+			{
+				max = best[d];
+				occ = count[d];
+				encountered = new ArrayList<>();
+				encountered.add(d);
+			}
+			else if (best[d] == max)
+			{
+				boolean boi = false;
+				int loc = -1;
+				for(Integer b: encountered)
+				{
+					if(prices[d] == prices[b])
+					{
+						boi = true;
+						loc = b;
+					}
+				}
+				if(!boi)
+				{
+					occ = occ.add(count[d]);
+					encountered.add(d);
+				}
+			}
+		}
+		
+		out.println(max + " " + occ);
+		out.close();
+		
+		}
+}
