@@ -1,0 +1,158 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: race3
+*/
+import java.io.*;
+import java.util.*;
+import java.math.BigInteger;
+
+class race3{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("race3.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("race3.out")));
+		int[][] adj = new int[51][51];
+		String line = f.readLine();
+		int on = 0;
+		while(line != null)
+		{
+			StringTokenizer reader = new StringTokenizer(line);
+			while(reader.hasMoreTokens())
+			{
+				int con = Integer.parseInt(reader.nextToken());
+				if(con >= 0)
+				{
+					adj[on][con] = 1;
+				}
+			}
+			on++;
+			line = f.readLine();
+		}
+		
+		
+		ArrayList<Integer> unavoidable = unavoid(adj, on - 2);
+		ArrayList<Integer> split = splits(adj, on - 2, unavoidable);
+		
+		out.print(unavoidable.size());
+		for(int i = 0; i < unavoidable.size(); i++)
+		{
+			out.print(" " + unavoidable.get(i));
+		}
+		out.println();
+		out.print(split.size());
+		for(int i = 0; i < split.size(); i++)
+		{
+			out.print(" " + split.get(i));
+		}
+		out.println();
+		
+		out.close();
+		
+		}
+		
+		public static ArrayList<Integer> splits (int[][] adj, int points, ArrayList<Integer> unavoidable)
+		{
+			ArrayList<Integer> point = new ArrayList<>();
+			for(int i = 0; i < unavoidable.size(); i++)
+			{
+				int curr = unavoidable.get(i);
+				boolean[] reached = new boolean[points + 1];
+				reached[0] = true;
+				LinkedList<Integer> queue = new LinkedList<>();
+				queue.add(0);
+				while(queue.size() != 0)
+				{
+					int current = queue.remove();
+					for(int j = 0; j <= points; j++)
+					{
+						if(adj[current][j] > 0 && j != curr)
+						{
+							if(!reached[j])
+							{
+								queue.add(j);
+							}
+							reached[j] = true;
+						}
+					}
+				}
+				ArrayList<Integer> front = new ArrayList<>();
+				for(int j = 0; j < points; j++)
+				{
+					if(reached[j])
+					{
+						front.add(j);
+					}
+				}
+				front.remove(new Integer(curr));
+				
+				boolean[] breached = new boolean[points + 1];
+				breached[curr] = true;
+				queue = new LinkedList<>();
+				queue.add(curr);
+				while(queue.size() != 0)
+				{
+					int current = queue.remove();
+					for(int j = 0; j <= points; j++)
+					{
+						if(adj[current][j] > 0)
+						{
+							if(!breached[j])
+							{
+								queue.add(j);
+							}
+							breached[j] = true;
+						}
+					}
+				}
+				
+				boolean works = true;
+				for(int j = 0; j < front.size(); j++)
+				{
+					if(breached[front.get(j)])
+					{
+						works = false;
+					}
+				}
+				if(works)
+				{
+					point.add(curr);
+				}
+				
+			}
+			
+			return point;
+		}
+		
+		public static ArrayList<Integer> unavoid (int[][] adj, int points)
+		{
+			ArrayList<Integer> point = new ArrayList<>();
+			for(int i = 1; i < points; i++)
+			{
+				boolean[] reached = new boolean[points + 1];
+				reached[0] = true;
+				LinkedList<Integer> queue = new LinkedList<>();
+				queue.add(0);
+				while(queue.size() != 0)
+				{
+					int current = queue.remove();
+					for(int j = 0; j <= points; j++)
+					{
+						if(adj[current][j] > 0 && j != i)
+						{
+							if(!reached[j])
+							{
+								queue.add(j);
+							}
+							reached[j] = true;
+						}
+					}
+				}
+				if(!reached[points])
+				{
+					point.add(i);
+				}
+			}
+			
+			return point;
+		}
+}
