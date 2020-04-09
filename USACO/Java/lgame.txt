@@ -1,0 +1,165 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: lgame
+*/
+import java.io.*;
+import java.util.*;
+import java.math.BigInteger;
+
+class lgame{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("lgame.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("lgame.out")));
+		String input = f.readLine();
+		
+		String[] highest = bestscore(input);
+		Arrays.sort(highest, 1, Integer.parseInt(highest[0]));
+		out.println(score(highest[1]));
+		int start = 1;
+		while(highest[start] != null)
+		{
+			out.println(highest[start]);
+			start++;
+		}
+		out.close();
+		
+	}
+	
+	public static String[] bestscore(String word) throws IOException
+	{
+		BufferedReader dict = new BufferedReader(new FileReader("lgame.dict"));
+		String[] highest = new String[40001];
+		String[] previous = new String[40001];
+		int[][] arrayed = new int[40001][26];
+		int[] a = arrayify(word);
+		int max = 0;
+		
+		String line = dict.readLine();
+		int place = 1;
+		int loc = 0;
+		while (!line.equals("."))
+		{
+			int[] arr = arrayify(line);
+			arrayed[place] = arr;
+			if(inside(a, arr))
+			{
+				int s = score(line);
+				if(s > max)
+				{
+					highest = new String[40001];
+					highest[1] = line;
+					loc = 2;
+					max = s;
+				}
+				else if (s == max)
+				{
+					highest[loc] = line;
+					loc++;
+				}
+				if(word.length() - line.length() >= 3)
+				{
+					previous[place] = line;
+					for(int i = 1; i < place; i++)
+					{
+						if(previous[i] != null)
+						{
+							if(pinside(a, arrayed[i], arrayed[place]))
+							{
+								int sc = score(previous[i] + line);
+								if(sc > max)
+								{
+									highest = new String[40001];
+									highest[1] = previous[i] + " " + line;
+									loc = 2;
+									max = sc;
+								}
+								else if (sc == max)
+								{
+									highest[loc] = previous[i] + " "  + line;
+									loc++;
+								}
+							}
+						}
+					}
+				}
+			}
+			line = dict.readLine();
+			place++;
+		}
+		highest[0] = loc + "";
+		return highest;
+	}
+	
+	public static boolean pinside(int[] big, int[] small1, int[] small2) throws IOException
+	{
+		for(int i = 0; i < 26; i++)
+		{
+			if(small1[i] + small2[i] > big[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static boolean inside(int[] big, int[] small) throws IOException
+	{
+		for(int i = 0; i < 26; i++)
+		{
+			if(small[i] > big[i])
+				return false;
+		}
+		return true;
+	}
+	
+	public static int[] arrayify (String word) throws IOException
+	{
+		int[] occ = new int[26];
+		for(int i = 0; i < word.length(); i++)
+		{
+			occ[word.charAt(i)-97]++;
+		}
+		return occ;
+	}
+	
+	public static int score (String word) throws IOException
+	{
+		int total = 0;
+		for(int i = 0; i < word.length(); i++)
+		{
+			char c = word.charAt(i);
+			if(c == 'e' || c == 'i' || c == 's')
+			{
+				total++;
+			}
+			else if (c == 'r' || c == 't' || c == 'a' || c == 'n')
+			{
+				total += 2;
+			}
+			else if(c == 'o' || c == 'l')
+			{
+				total += 3;
+			}
+			else if (c == 'u' || c == 'd' || c == 'c')
+			{
+				total += 4;
+			}
+			else if (c == 'y' || c == 'p' || c == 'g' || c == 'h' || c == 'b' || c == 'm')
+			{
+				total += 5;
+			}
+			else if (c == 'w' || c == 'f' || c == 'k' || c == 'v')
+			{
+				total += 6;
+			}
+			else if(c == 'q' || c == 'j' || c == 'z' || c == 'x')
+			{
+				total += 7;
+			}
+		}
+		
+		
+		return total;
+	}
+}
