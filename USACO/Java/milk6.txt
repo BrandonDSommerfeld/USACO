@@ -1,0 +1,173 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: milk6
+*/
+import java.io.*;
+import java.util.*;
+
+class milk6{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("milk6.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("milk6.out")));
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int nodes = Integer.parseInt(reader.nextToken());
+		int edges = Integer.parseInt(reader.nextToken());
+		int[][] adj = new int[nodes + 1][nodes + 1];
+		ArrayList<Integer>[][] labels = new ArrayList[nodes + 1][nodes + 1];
+		for(int i = 1; i <= edges; i++)
+		{
+			reader = new StringTokenizer(f.readLine());
+			int first = Integer.parseInt(reader.nextToken());
+			int second = Integer.parseInt(reader.nextToken());
+			adj[first][second] += Integer.parseInt(reader.nextToken());
+			if(labels[first][second] == null)
+			{
+				labels[first][second] = new ArrayList<>();
+			}
+			labels[first][second].add(i);
+		}
+		
+		int[] cuts = algorithm(adj, labels, nodes);
+		Arrays.sort(cuts, 1, cuts[0] + 1);
+		
+		out.println(cuts[cuts[0] + 1] + " " + cuts[0]);
+		
+		for(int i = 1; i <= cuts[0]; i++)
+		{
+			out.println(cuts[i]);
+		}
+		
+		out.close();
+	}
+	
+	public static int[] algorithm (int[][] adj, ArrayList<Integer>[][] labels, int nodes)
+	{
+		int[] cuts = new int[2000];
+		int[][] cap = new int[nodes + 1][nodes + 1];
+		for(int i = 1; i <= nodes; i++)
+		{
+			for(int j = 1; j <= nodes; j++)
+			{
+				cap[i][j] = adj[i][j];
+			}
+		}
+		
+		boolean time = true;
+		while(true)
+		{
+			int[][] capacity = new int[nodes + 1][nodes + 1];
+			for(int i = 1; i <= nodes; i++)
+			{
+				for(int j = 1; j <= nodes; j++)
+				{
+					capacity[i][j] = cap[i][j];
+				}
+			}
+			
+			int total = 0;
+			
+			while(true)
+			{
+				int[] flow = new int[nodes + 1];
+				int[] previous = new int[nodes + 1];
+				boolean[] visited = new boolean[nodes + 1];
+				flow[1] = Integer.MAX_VALUE;
+				int max = 0;
+				int place = -1;
+				while(true)
+				{
+					max = 0;
+					place = -1;
+					for(int i = 1; i <= nodes; i++)
+					{
+						if(!visited[i] && flow[i] > max)
+						{
+							max = flow[i];
+							place = i;
+						}
+					}
+					if(place == -1 || place == nodes)
+					{
+						break;
+					}
+					visited[place] = true;
+					for(int i = 1; i <= nodes; i++)
+					{
+						int num = Math.min(flow[place], capacity[place][i]);
+						if(num > flow[i])
+						{
+							flow[i] = num;
+							previous[i] = place;
+						}
+					}
+				}
+				if(place == -1)
+				{
+					break;
+				}
+				total += flow[nodes];
+				int back = nodes;
+				int front = previous[nodes];
+				while(back != 1)
+				{
+					capacity[front][back] -= flow[nodes];
+					capacity[back][front] += flow[nodes];
+					back = front;
+					front = previous[front];
+				}
+				
+			}
+			if(total == 0)
+			{
+				break;
+			}
+			if(time)
+			{
+				cap[0][0] = total;
+				time = false;
+			}
+			int high = 0;
+			int first = -1;
+			int second = -1;
+			ArrayList<Integer> l = new ArrayList<>();
+			for(int i = 1; i <= nodes; i++)
+			{
+				for(int j = 1; j <= nodes; j++)
+				{
+					if(cap[i][j] > high && capacity[i][j] == 0)
+					{
+						high = cap[i][j];
+						l = labels[i][j];
+						first = i;
+						second = j;
+					}
+					else if (cap[i][j] > 0 && cap[i][j] == high && capacity[i][j] == 0 && labels[i][j].size() < l.size())
+					{
+						high = cap[i][j];
+						l = labels[i][j];
+						first = i;
+						second = j;
+					}
+					else if (cap[i][j] > 0 && cap[i][j] == high && capacity[i][j] == 0 && labels[i][j].size() == l.size() && labels[i][j].get(0) < l.get(0))
+					{
+						high = cap[i][j];
+						l = labels[i][j];
+						first = i;
+						second = j;
+					}
+				}
+			}
+			cap[first][second] = 0;
+			for(int i = 0; i < labels[first][second].size(); i++)
+			{
+				cuts[cuts[0] + 1] = labels[first][second].get(i);
+				cuts[0]++;
+			}
+			
+			
+		}
+		cuts[cuts[0] + 1] = cap[0][0];
+		return cuts;
+	}
+}
