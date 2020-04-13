@@ -1,0 +1,153 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: frameup
+*/
+import java.io.*;
+import java.util.*;
+
+class frameup{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("frameup.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("frameup.out")));
+		StringTokenizer reader = new StringTokenizer(f.readLine());
+		int rows = Integer.parseInt(reader.nextToken());
+		int cols = Integer.parseInt(reader.nextToken());
+		char[][] board = new char[rows + 1][cols + 1];
+		for(int i = 1; i <= rows; i++)
+		{
+			String line = f.readLine();
+			for(int j = 1; j <= cols; j++)
+			{
+				board[i][j] = line.charAt(j-1);
+			}
+		}
+		
+		ArrayList<String> orders = algorithm(board, rows, cols);
+		Collections.sort(orders);
+		for(int i = 0; i < orders.size(); i++)
+		{
+			out.println(orders.get(i));
+		}
+		
+		out.close();
+	}
+	
+	public static ArrayList<String> algorithm(char[][] board, int rows, int cols)
+	{
+		
+			int[][] sides = new int[26][4];
+			for(int i = 1; i <= rows; i++)
+			{
+				for(int j = 1; j <= cols; j++)
+				{
+					char c = board[i][j];
+					if(c != '.')
+					{
+						if(sides[c - 65][0] == 0)
+						{
+							sides[c-65][0] = i;
+							sides[c-65][2] = j;
+						}
+						else if (sides[c-65][0] > i)
+						{
+							sides[c-65][0] = i;
+						}
+						else if (sides[c-65][1] < i)
+						{
+							sides[c-65][1] = i;
+						}
+						if (sides[c-65][2] > j)
+						{
+							sides[c-65][2] = j;
+						}
+						else if (sides[c-65][3] < j)
+						{
+							sides[c-65][3] = j;
+						}
+					}
+				}
+			}
+			
+			boolean[][] before = new boolean[26][26];
+			int letters = 0;
+			boolean[] in = new boolean[26];
+			for(int i = 0; i < 26; i++)
+			{
+				if(sides[i][0] != 0)
+				{
+					letters++;
+					in[i] = true;
+					for(int r = sides[i][0]; r <= sides[i][1]; r++)
+					{
+						if(board[r][sides[i][2]] != ((char) i + 65))
+						{
+							before[board[r][sides[i][2]] - 65][i] = true;
+						}
+					}
+					for(int r = sides[i][0]; r <= sides[i][1]; r++)
+					{
+						if(board[r][sides[i][3]] != ((char) i + 65))
+						{
+							before[board[r][sides[i][3]] - 65][i] = true;
+						}
+					}
+					for(int c = sides[i][2]; c <= sides[i][3]; c++)
+					{
+						if(board[sides[i][0]][c] != ((char) i + 65))
+						{
+							before[board[sides[i][0]][c] - 65][i] = true;
+						}
+					}
+					for(int c = sides[i][2]; c <= sides[i][3]; c++)
+					{
+						if(board[sides[i][1]][c] != ((char) i + 65))
+						{
+							before[board[sides[i][1]][c] - 65][i] = true;
+						}
+					}
+				}
+			}
+			
+			ArrayList<String> orders = new ArrayList<>();
+			orders.add("");
+			for(int i = 0; i < letters; i++)
+			{
+				ArrayList<String> temp = new ArrayList<>();
+				for(int j = 0; j < 26; j++)
+				{
+					if(in[j])
+					{
+					for(int w = 0; w < orders.size(); w++)
+					{
+						String word = orders.get(w);
+						boolean[] contains = new boolean[26];
+						for(int c = 0; c < word.length(); c++)
+						{
+							contains[word.charAt(c) - 65] = true;
+						}
+						boolean good = true;
+						if(contains[j])
+						{
+							good = false;
+						}
+						for(int k = 0; k < 26; k++)
+						{
+							if(before[k][j] && !contains[k])
+							{
+								good = false;
+							}
+						}
+						if(good)
+						{
+							temp.add(((char) (j + 65)) + word);
+						}
+					}
+					}
+				}
+				orders = temp;
+			}
+			
+		return orders;
+	}
+}
