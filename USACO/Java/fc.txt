@@ -1,0 +1,150 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: fc
+*/
+import java.io.*;
+import java.util.*;
+import java.text.DecimalFormat;
+
+class fc{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("fc.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("fc.out")));
+		int points = Integer.parseInt(f.readLine());
+		
+		double[][] set = new double[points][2];
+		double totx = 0, toty = 0;
+		for(int i = 0; i < points; i++)
+		{
+			StringTokenizer reader = new StringTokenizer(f.readLine());
+			double x = Double.parseDouble(reader.nextToken());
+			double y = Double.parseDouble(reader.nextToken());
+			set[i][0] = x;
+			set[i][1] = y;
+			totx += x;
+			toty += y;
+		}
+		if(points < 3)
+		{
+			out.println(0);
+		}
+		else
+		{
+			DecimalFormat fmt = new DecimalFormat("##############.00");
+			out.println(fmt.format(algorithm(set, points, totx, toty)));
+		}
+		out.close();
+	}
+	
+	public static double cross (double x1, double y1, double x2, double y2)
+	{
+		return (x1 * y2 - x2 * y1);
+	}
+	
+	public static double angle (double ox, double oy, double x, double y)
+	{
+		if(y - oy >= 0)
+		{
+			return Math.acos((x - ox) / Math.sqrt((x - ox) * (x - ox) + (y-oy)*(y-oy)));
+		}
+		return 2 * Math.PI - Math.acos((x - ox) / Math.sqrt((x - ox) * (x - ox) + (y-oy)*(y-oy)));
+	}
+	
+	public static double algorithm(double[][] set, int points, double totx, double toty)
+	{
+		double centerx = totx / points;
+		double centery = toty / points;
+		double[][] angles = new double[points][3];
+		for(int i = 0; i < points; i++)
+		{
+			angles[i][1] = set[i][0];
+			angles[i][2] = set[i][1];
+			angles[i][0] = angle(centerx, centery, set[i][0], set[i][1]);
+		}
+		sort(angles, 0, points - 1);
+		
+		int[] hull = new int[points];
+		hull[0] = 0;
+		hull[1] = 1;
+		int hullpos = 2;
+		for(int i = 2; i < points - 1; i++)
+		{
+			while(hullpos > 1 && cross(angles[hull[hullpos-2]][1] - angles[hull[hullpos-1]][1],angles[hull[hullpos-2]][2] - angles[hull[hullpos-1]][2], angles[hull[hullpos-1]][1] - angles[i][1], angles[hull[hullpos-1]][2] - angles[i][2]) < 0)
+			{
+				hullpos--;
+			}
+			hull[hullpos] = i;
+			hullpos++;
+		}
+		
+		int p = points - 1;
+		while(hullpos > 1 && cross(angles[hull[hullpos-2]][1] - angles[hull[hullpos-1]][1],angles[hull[hullpos-2]][2] - angles[hull[hullpos-1]][2], angles[hull[hullpos-1]][1] - angles[p][1], angles[hull[hullpos-1]][2] - angles[p][2]) < 0)
+		{
+			hullpos--;
+		}
+		
+		int hullstart = 0;
+		boolean flag = true;
+		do
+		{
+			flag = false;
+			if(hullpos - hullstart >= 2 && cross(angles[p][1] - angles[hull[hullpos-1]][1],angles[p][2] - angles[hull[hullpos-1]][2], angles[hull[hullstart]][1] - angles[p][1], angles[hull[hullstart]][2] - angles[p][2]) < 0)
+			{
+				p = hull[hullpos-1];
+				hullpos--;
+				flag = true;
+			}
+			
+			if(hullpos - hullstart >= 2 && cross(angles[hull[hullstart]][1] - angles[p][1],angles[hull[hullstart]][2] - angles[p][2], angles[hull[hullstart+1]][1] - angles[hull[hullstart]][1], angles[hull[hullstart+1]][2] - angles[hull[hullstart]][2]) < 0)
+			{
+				hullstart++;
+				flag = true;
+			}
+		}
+		while(flag);
+		
+		hull[hullpos] = p;
+		hullpos++;
+		
+		double total = 0;
+		for(int i = hullstart; i < hullpos-1; i++)
+		{
+			total += Math.hypot(angles[hull[i]][1] - angles[hull[i + 1]][1], angles[hull[i]][2] - angles[hull[i + 1]][2]);
+		}
+		total += Math.hypot(angles[hull[hullstart]][1] - angles[hull[hullpos-1]][1], angles[hull[hullstart]][2] - angles[hull[hullpos-1]][2]);
+		
+		return total;
+	}
+	
+	public static int partition(double[][] arr, int low, int high) 
+    { 
+        double pivot = arr[high][0];  
+        int i = (low-1);
+        for (int j=low; j<high; j++) 
+        { 
+            if (arr[j][0] < pivot) 
+            { 
+                i++; 
+                double[] temp = arr[i]; 
+                arr[i] = arr[j]; 
+                arr[j] = temp; 
+            } 
+        } 
+        double[] temp = arr[i+1]; 
+        arr[i+1] = arr[high]; 
+        arr[high] = temp; 
+  
+        return i+1; 
+    } 
+		
+		 public static void sort(double[][] arr, int low, int high) 
+    { 
+        if (low < high) 
+        { 
+            int pi = partition(arr, low, high); 
+            sort(arr, low, pi-1); 
+            sort(arr, pi+1, high); 
+        } 
+    } 
+}
