@@ -1,0 +1,244 @@
+/*
+ID: bdsomme1
+LANG: JAVA
+TASK: starry
+*/
+import java.io.*;
+import java.util.*;
+
+class starry{
+	public static void main (String[] args) throws IOException {
+		BufferedReader f = new BufferedReader(new FileReader("starry.in"));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("starry.out")));
+		int cols = Integer.parseInt(f.readLine());
+		int rows = Integer.parseInt(f.readLine());
+		char[][] sky = new char[rows][cols];
+		for(int i = 0; i < rows; i++)
+		{
+			String line = f.readLine();
+			for(int j = 0; j < cols; j++)
+			{
+				sky[i][j] = line.charAt(j);
+			}
+		}
+		algorithm(sky, rows, cols);
+		
+		for(int i = 0; i < rows; i++)
+		{
+			for(int j = 0; j < cols; j++)
+			{
+				out.print(sky[i][j]);
+			}
+			out.println();
+		}
+		
+		out.close();
+	}
+	
+	public static void algorithm (char[][] sky, int rows, int cols)
+	{
+		char[][][] ors = new char[26 * 8][rows][cols];
+		int[][] lengths = new int[26 * 8][2];
+		int letter = 0;
+		for(int i = 0; i < rows; i++)
+		{
+			for(int j = 0; j < cols; j++)
+			{
+				if(sky[i][j] == '1')
+				{
+					int startrow = 1000, endrow = -1, startcol = 1000, endcol = -1;
+					Stack<Integer> queue = new Stack<>();
+					queue.push(i * cols + j);
+					while(!queue.empty())
+					{
+						int current = queue.pop();
+						int row = current / cols;
+						int col = current % cols;
+						sky[row][col] = 'T';
+						
+							if(row < startrow)
+							{
+								startrow = row;
+							}
+							if(row > endrow)
+							{
+								endrow = row;
+							}
+							if(col > endcol)
+							{
+								endcol = col;
+							}
+							if(col < startcol)
+							{
+								startcol = col;
+							}
+							
+							if(row > 0 && col > 0 && sky[row-1][col-1] == '1')
+							{
+								queue.push(cols * (row-1) + col-1);
+							}
+					
+					
+							if(row > 0 && col < cols-1 && sky[row-1][col+1] == '1')
+							{
+								queue.push(cols * (row-1) + col+1);
+							}
+					
+							if(row < rows-1 && col>0 && sky[row+1][col-1] == '1')
+							{
+								queue.push(cols * (row+1) + col-1);
+							}
+					
+							if(row < rows-1 && col < cols-1 && sky[row+1][col+1] == '1')
+							{
+								queue.push(cols * (row+1) + col+1);
+							}
+					
+							if(row > 0 && sky[row-1][col] == '1')
+							{
+								queue.push(cols * (row-1) + col);
+							}
+					
+							if(col > 0 && sky[row][col-1] == '1')
+							{
+								queue.push(cols * (row) + col-1);
+							}
+						
+							if(col < cols-1 && sky[row][col+1] == '1')
+							{
+								queue.push(cols * (row) + col+1);
+							}
+					
+							if(row < rows-1 && sky[row+1][col] == '1')
+							{
+								queue.push(cols * (row+1) + col);
+							}
+						}
+					
+					boolean before = false;
+					for(int l = 0; l < letter * 8 && !before; l++)
+					{
+						if(equals(ors[l], sky, startrow, endrow, startcol, endcol, lengths[l]))
+						{
+							char ch = (char) (l/8 + 97);
+							replace(startrow, endrow, startcol, endcol, sky, ch);
+							before = true;
+						}
+					}
+					if(!before)
+					{
+						ArrayList<Object> out = orientations(sky, startrow, endrow, startcol, endcol);
+						char[][][] orient = (char[][][]) out.get(0);
+						int[][] dimensions = (int[][]) out.get(1);
+						for(int r = 0; r < 8; r++)
+						{
+							ors[letter*8 + r] = orient[r];
+							lengths[letter*8+r] = dimensions[r];
+						}
+						char ch = (char) (letter + 97);
+						replace(startrow, endrow, startcol, endcol, sky, ch);
+						letter++;
+					}
+				}
+			}
+		}
+	}
+	
+	public static void replace(int startrow, int endrow, int startcol, int endcol, char[][] sky, char letter)
+	{
+		for(int i = startrow; i <= endrow; i++)
+		{
+			for(int j = startcol; j <= endcol; j++)
+			{
+				if(sky[i][j] == 'T')
+				{
+					sky[i][j] = letter;
+				}
+			}
+		}
+	}
+	
+	public static boolean equals (char[][] orient, char[][] sky, int startrow, int endrow, int startcol, int endcol, int[] lengths)
+	{
+		if(!(endrow-startrow+1 == lengths[0] && endcol-startcol+1 == lengths[1]))
+		{
+			return false;
+		}
+		
+		for(int i = startrow; i <= endrow; i++)
+		{
+			for(int j = startcol; j <= endcol; j++)
+			{
+				if(orient[i-startrow][j-startcol] == 'T' ^ sky[i][j] == 'T')
+				{
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	public static ArrayList<Object> orientations (char[][] sky, int startrow, int endrow, int startcol, int endcol)
+	{
+		ArrayList<Object> temp = new ArrayList<>();
+		int rows = sky.length;
+		int cols = sky[0].length;
+		char[][][] orient = new char[8][rows][cols];
+		int[][] dimensions = new int[8][2];
+		for(int i = 0; i < 4; i++)
+		{
+			dimensions[i][0] = endrow-startrow+1;
+			dimensions[i][1] = endcol-startcol+1;
+			dimensions[i+4][0] = endcol-startcol+1;
+			dimensions[i+4][1] = endrow-startrow+1;
+		}
+		for(int row = startrow; row <= endrow; row++)
+		{
+			for(int col = startcol; col <= endcol; col++)
+			{
+				if(sky[row][col] == 'T')
+				{
+						if(row - startrow < rows && col - startcol < cols)
+						{
+							orient[0][row-startrow][col-startcol] = sky[row][col];
+						}
+						if(endrow-row < rows && col-startcol < cols)
+						{
+							orient[1][endrow-row][col-startcol] = sky[row][col];
+						}
+						if(row-startrow < rows && endcol-col < cols)
+						{
+							orient[2][row-startrow][endcol-col] = sky[row][col];
+						}
+						if(endrow-row < rows && endcol-col < cols)
+						{
+							orient[3][endrow-row][endcol-col] = sky[row][col];
+						}
+						if(col-startcol < rows && row-startrow < cols)
+						{
+							orient[4][col-startcol][row-startrow]= sky[row][col];
+						}
+						if(endcol-col < rows && row-startrow < cols)
+						{
+							orient[5][endcol-col][row-startrow]= sky[row][col];
+						}
+						if(col-startcol < rows && endrow-row < cols)
+						{
+							orient[6][col-startcol][endrow-row]= sky[row][col];
+						}
+						if(endcol-col<rows && endrow-row < cols)
+						{
+							orient[7][endcol-col][endrow-row]= sky[row][col];
+						}
+						
+						
+					}	
+				}
+			}
+			
+		temp.add(orient);
+		temp.add(dimensions);
+		return temp;
+	}
+}
