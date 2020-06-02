@@ -7,7 +7,6 @@ import java.io.*;
 import java.util.*;
 
 class schlnet{
-	
 	public static void main (String[] args) throws IOException {
 	BufferedReader f = new BufferedReader(new FileReader("schlnet.in"));
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("schlnet.out")));
