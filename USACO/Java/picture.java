@@ -13,8 +13,8 @@ class picture{
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("picture.out")));
     
     int r = Integer.parseInt(f.readLine());
-    int[][] lefts = new int[r][3];
-    int[][] rights = new int[r][3];
+    int[][] rects = new int[10000][5];
+    int k, npt = 0;
     for(int i = 0; i < r; i++)
     {
     	StringTokenizer reader = new StringTokenizer(f.readLine());
@@ -22,87 +22,52 @@ class picture{
     	int y1 = Integer.parseInt(reader.nextToken());
     	int x2 = Integer.parseInt(reader.nextToken());
     	int y2 = Integer.parseInt(reader.nextToken());
-    	lefts[i][0] = x1;
-    	lefts[i][1] = y1;
-    	lefts[i][2] = y2;
-    	rights[i][0] = x2;
-    	rights[i][1] = y1;
-    	rights[i][2] = y2;
+    	k = npt++;
+    	rects[i][0] = x1;
+    	rects[i][1] = x2;
+    	rects[i][2] = y1;
+    	rects[i][3] = y2;
+    	rects[i][4] = 1;
+    	for(int j = 0; j < k; j++)
+    	{
+    		rects[npt] = intersect  (rects[j] , rects[k]);
+    		if ((rects[npt][1] > rects[npt][0] && rects[npt][3] >= rects[npt][2]) || (rects[npt][1] == rects[npt][0] && rects[npt][3] > rects[npt][2]))
+    		{
+
+    	         if (rects[npt][0] == rects[k][0] && rects[npt][1] == rects[k][1] && rects[npt][2] == rects[k][2] && rects[npt][3] == rects[k][3])
+    	         {  
+
+    	            npt = k;
+
+    	            break;
+
+    	         }
+    	         else 
+    	        	 npt++;
+
+    	     }
+    	}
     }
-    
-    out.println(perimeter(lefts, rights, r));
+    int perim = 0;
+    for (int i = 0; i < npt; i++)
+    {
+    	perim += rects[i][4] * 2 * (rects[i][1] - rects[i][0] + rects[i][3] - rects[i][2]);
+    }
+    	
+    out.println(perim);
     out.close();
 	}
 	
-	public static int perimeter(int[][] lefts, int[][] rights, int size)
+	public static int[] intersect (int[] rect1, int[] rect2)
 	{
-		int p = 0;
-		sort(lefts, 0, size);
-		sort(rights, 0, size);
-		
-		int l = 0, r = 0;
-		while(r < size)
-		{
-			if(lefts[l][0] < rights[r][0])
-			{
-				
-				
-				l++;
-			}
-			else
-			{
-				
-				
-				r++;
-			}
-		}
-		
-		return p;
+		int[] put = new int[5];
+		put[0] = Math.max(rect1[0], rect2[0]);
+		put[1] = Math.max(rect1[1], rect2[1]);
+		put[2] = Math.min(rect1[2], rect2[2]);
+		put[3] = Math.min(rect1[3], rect2[3]);
+		put[4] = -1 * rect1[4] * rect2[4];
+		return put;
 	}
 	
-	public static int partition(int arr[][], int low, int high) 
-    { 
-        int pivot = arr[high][0];  
-        int i = (low-1); // index of smaller element 
-        for (int j=low; j<high; j++) 
-        { 
-            // If current element is smaller than the pivot 
-            if (arr[j][0] < pivot) 
-            { 
-                i++; 
-  
-                // swap arr[i] and arr[j] 
-                int[] temp = arr[i]; 
-                arr[i] = arr[j]; 
-                arr[j] = temp; 
-            } 
-        } 
-  
-        // swap arr[i+1] and arr[high] (or pivot) 
-        int[] temp = arr[i+1]; 
-        arr[i+1] = arr[high]; 
-        arr[high] = temp; 
-  
-        return i+1; 
-    } 
-  
-  
-    /* The main function that implements QuickSort() 
-      arr[] --> Array to be sorted, 
-      low  --> Starting index, 
-      high  --> Ending index */
-    public static void sort(int[][] arr, int low, int high) 
-    { 
-        if (low < high) 
-        { 
-            
-            int pi = partition(arr, low, high); 
-  
-            // Recursively sort elements before 
-            // partition and after partition 
-            sort(arr, low, pi-1); 
-            sort(arr, pi+1, high); 
-        } 
-    }
 }
     
