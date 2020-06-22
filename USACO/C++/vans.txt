@@ -1,0 +1,149 @@
+/*
+ID: bdsomme1
+TASK: vans
+LANG: C++                 
+*/
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+typedef struct BIGNUM *bignum_t;
+struct BIGNUM
+ {
+  int val;
+  bignum_t next;
+ };
+
+/* allocate a bignum_t */
+bignum_t get_big(void)
+ { /* because the bignum structure is so small, we'll allocate them
+      in blocks */
+  static bignum_t block;
+  static int size = 0;
+  if (size == 0)
+   { /* no more structures left, allocate a new block */
+    block = (bignum_t)malloc(sizeof(*block)*128);
+    size = 128;
+   }
+  size--;
+  return block++;
+ }
+
+/* initialize a bignum to this value */
+void init_big(bignum_t *num, int val)
+ {
+  *num = get_big(); /* allocate space */
+
+  /* initialize */
+  (*num)->val = val;
+  (*num)->next = NULL;
+ }
+
+/* add b to a (a <- a+b) */
+void add(bignum_t a, bignum_t b)
+ {
+  int c; /* carry */
+  
+  c = 0;
+  while (b || c) /* while either there's more b, or there's a carry */
+   {
+    a->val += c; /* add the carry */
+    if (b) a->val += b->val; /* add b, if there's more b */
+
+    /* if a->val is too large, we need to carry */
+    c = (a->val / 1000000);
+    a->val = (a->val % 1000000);
+
+    if (b) b = b->next;
+    if (!a->next && (b || c))
+     { /* allocate if we need to */
+      a->next = get_big();
+      a = a->next;
+
+      /* initialize the allocated space to 0 */
+      a->val = 0;
+      a->next = NULL;
+     } else a = a->next;
+   }
+ }
+
+/* output the number v to the FILE f. no leading spaces or trailing newline */
+void out_num(FILE *f, bignum_t v)
+ {
+  if (v->next)  /* not at first digits */
+   {
+    out_num(f, v->next); /* output the more significant digits */
+    fprintf (f, "%06i", v->val); /* output these digits, 0 padding is necc */
+   }
+  else 
+    fprintf (f, "%i", v->val); /* most significant digits, no 0-padding */
+ }
+
+int streets;
+bignum_t end1[10001], end2[10001], end3[10001], end4[10001], end5[10001];
+//end1 will be straight line, end2 will be 2 lines, end3 is open 1 2 1, end4 is open with 1 3, end5 is open 2 2
+bignum_t ans;
+void algorithm ()
+{
+    if(streets == 1)
+    {
+        init_big(&ans, 0);
+        return;
+    }
+    if(streets == 2)
+    {
+        init_big(&ans, 2);
+        return;
+    }
+    init_big(&end1[3], 1);
+    init_big(&end2[3], 1);
+    init_big(&end3[3], 1);
+    init_big(&end4[3], 1);
+    init_big(&end5[3], 1);
+    for(int i = 4; i <= streets; i++)
+    {
+        bignum_t temp;
+        init_big(&temp, 0);
+        add(temp, end3[i-1]);
+        add(temp, end4[i-1]);
+        add(temp, end4[i-1]);
+        add(temp, end5[i-1]);
+        end1[i] = temp;
+        init_big(&temp, 0);
+        add(temp, end1[i-1]);
+        add(temp, end2[i-1]);
+        end2[i] = temp;
+        init_big(&temp, 0);
+        add(temp, end3[i-1]);
+        add(temp, end4[i-1]);
+        add(temp, end4[i-1]);
+        end3[i] = temp;
+        init_big(&temp, 0);
+        add(temp, end1[i-1]);
+        add(temp, end2[i-1]);
+        end4[i] = temp;
+        end5[i] = end1[i-1];
+    }
+    bignum_t other;
+    init_big(&other, 0);
+    init_big(&ans, 0);
+    add(ans, end1[streets]);
+    add(ans, end2[streets]);
+    add(other, end1[streets]);
+    add(other, end2[streets]);
+    add(ans, other);
+}
+
+int main() {
+    FILE *fin, *fout;
+	fin = fopen("vans.in", "r");
+	fout = fopen("vans.out", "w");
+    
+	fscanf(fin, "%d", &streets);
+    algorithm();
+    out_num(fout, ans);
+	fprintf(fout, "\n");
+		
+    return 0;
+}

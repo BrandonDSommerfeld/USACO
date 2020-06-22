@@ -1,0 +1,66 @@
+/*
+ID: bdsomme1
+TASK: rectbarn
+LANG: C++                 
+*/
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+int rows, cols, p;
+int[][][] best;
+boolean[][] grid;
+
+int algorithm ()
+{
+    for(int row = 0; row < rows; row++)
+    {
+        for(int col = 0; col < cols; col++)
+        {
+            if(!grid[row][col])
+            {
+                if(row == 0)
+                {
+                    best[row][col][1] = 1;
+                }
+                else
+                {
+                    
+                }
+                if(col == 0)
+                {
+                    best[row][col][0] = 1;
+                }
+                else
+                {
+
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    FILE *fin, *fout;
+	fin = fopen("rectbarn.in", "r");
+	fout = fopen("rectbarn.out", "w");
+    
+	fscanf(fin, "%d %d", &rows, &cols, &p);
+	grid = new boolean[rows][cols];
+    best = new int[rows][cols][2];
+    for(int i = 0; i < p; i++)
+    {
+        int row, col;
+        fscanf(fin, "%d %d", &row, &col);
+        grid[row-1][col-1] = true;
+    }
+
+	int max = algorithm();
+    fprintf(fout, "%d", max);
+    fprintf(fout, "\n");
+	fclose(fin);
+    fclose(fout);	
+    return 0;
+}
