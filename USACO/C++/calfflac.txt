@@ -1,0 +1,51 @@
+/*
+ID: bdsomme1
+TASK: calfflac
+LANG: C++                 
+*/
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+struct interval
+{
+    int start;
+    int length;
+}
+
+char input[20000];
+int used, begi, en;
+
+void algorithm ()
+{
+    
+    while(true)
+    {
+
+    }
+
+}
+
+int main()
+{
+	fstream fin("calfflac.in",ios::in);
+	fstream fout("calfflac.out",ios::out);
+    used = 0;
+	while((c = getc(fin)) != EOF)
+    {
+        input[used] = c;
+        used++;
+    }
+
+    algorithm();
+    for(int i = begi; i <= en; i++)
+    {
+        fprintf(fout, "%c", input[i]);
+    }
+    fprintf(fout, "\n");
+	fin.close();
+	fout.close();
+	return 0;
+}

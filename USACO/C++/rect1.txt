@@ -1,0 +1,25 @@
+/*
+ID: bdsomme1
+TASK: rect1
+LANG: C++                 
+*/
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+
+int rows, cols, rects;
+int main() {
+    FILE *fin, *fout;
+	fin = fopen("rect1.in", "r");
+	fout = fopen("rect1.out", "w");
+    
+	fscanf(fin, "%d %d %d", &cols, &rows, &rects);
+    algorithm();
+    out_num(fout, ans);
+	fprintf(fout, "\n");
+		
+    return 0;
+}

@@ -6,37 +6,65 @@ LANG: C++
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <bits/stdc++.h> 
 
 using namespace std;
 
 int rows, cols, p;
-int[][][] best;
-boolean[][] grid;
+int highest = 0;
+bool broken[3000][3000];
+int height[3000], le[3000], ri[3000];
 
-int algorithm ()
+void algorithm ()
 {
-    for(int row = 0; row < rows; row++)
+    int k;
+    for(int i = 0; i < rows; i++)
     {
-        for(int col = 0; col < cols; col++)
+        k = 0;
+        for(int j = 0; j < cols; j++)
         {
-            if(!grid[row][col])
+            if(broken[i][j])
             {
-                if(row == 0)
+                le[j] = 0;
+                height[j] = 0;
+                k = 0;
+            }
+            else
+            {
+                k++;
+                if(le[j] == 0)
                 {
-                    best[row][col][1] = 1;
+                    le[j] = k;
                 }
                 else
                 {
-                    
+                    le[j] = min(k, le[j]);
                 }
-                if(col == 0)
+                height[j]++;
+            }
+            
+        }
+        k = 0;
+        for(int j = cols - 1; j >= 0; j--)
+        {
+            if(broken[i][j])
+            {
+                ri[j] = 0;
+                k = 0;
+                continue;
+            }
+            else
+            {
+                k++;
+                if(ri[j] == 0)
                 {
-                    best[row][col][0] = 1;
+                    ri[j] = k;
                 }
                 else
                 {
-
+                    ri[j] = min(k, ri[j]);
                 }
+                highest = max(highest, height[j] * (le[j] + ri[j] - 1));
             }
         }
     }
@@ -47,18 +75,18 @@ int main() {
 	fin = fopen("rectbarn.in", "r");
 	fout = fopen("rectbarn.out", "w");
     
-	fscanf(fin, "%d %d", &rows, &cols, &p);
-	grid = new boolean[rows][cols];
-    best = new int[rows][cols][2];
+	fscanf(fin, "%d %d %d", &rows, &cols, &p);
+
+
     for(int i = 0; i < p; i++)
     {
         int row, col;
         fscanf(fin, "%d %d", &row, &col);
-        grid[row-1][col-1] = true;
+        broken[row-1][col-1] = true;
     }
 
-	int max = algorithm();
-    fprintf(fout, "%d", max);
+	algorithm();
+    fprintf(fout, "%d", highest);
     fprintf(fout, "\n");
 	fclose(fin);
     fclose(fout);	
